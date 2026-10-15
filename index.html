@@ -208,6 +208,13 @@ h1, h2, h3 { margin: 0; }
 .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--accent); }
 
+/* Рейтинги и отзывы */
+.dist { display: grid; grid-template-columns: 22px 1fr 24px; gap: 6px; align-items: center; font-size: 12px; }
+.track { display: block; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.track i { display: block; height: 100%; background: var(--accent); }
+.review { background: var(--surface); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--shadow); }
+.reply { border-left: 3px solid var(--accent); padding-left: 8px; font-size: 13px; }
+
 /* Подробная карточка смены */
 .dphoto { height: 140px; border-radius: 18px; position: relative; display: flex; align-items: flex-end; padding: 12px 14px; color: #fff; overflow: hidden; flex: none; }
 .dphoto .letter { position: absolute; right: -6px; top: -26px; font-family: var(--f-display); font-weight: 700; font-size: 150px; line-height: 1; opacity: .18; }
@@ -314,6 +321,22 @@ const LATER = {
   "Вт, 21 окт": [{ venue: "Зерно", role: "Бариста", time: "08:00–14:00", hours: 6, base: 1900 }],
   "Ср, 22 окт": [{ venue: "Колосок", role: "Пекарь", time: "23:00–07:00", hours: 8, base: 3200 }, { venue: "Сова", role: "Повар", time: "16:00–22:00", hours: 6, base: 2800 }]
 };
+const VMETA = {
+  "Шкипер": { type: "Ресторан", rating: 4.8, count: 31, dist: [24, 5, 1, 1, 0], rules: ["Форма своя: чёрная футболка, закрытая обувь", "Перекус в 21:00 за счёт заведения", "Вход на кухню со двора, звонок у двери"], rates: [["Повар", "3 500 ₽ за 8 ч"], ["Мойщик", "2 200 ₽ за 8 ч"]], reviews: [{ who: "Сергей К.", stars: 5, tags: ["вовремя заплатили", "кормили"], date: "10 окт", reply: "Спасибо, ждём снова!" }, { who: "Алина В.", stars: 4, tags: ["дружная кухня"], date: "4 окт" }, { who: "Тимур Р.", stars: 5, tags: ["всё как в описании"], date: "28 сен" }] },
+  "Сова": { type: "Ресторан", rating: 4.9, count: 38, dist: [33, 4, 1, 0, 0], rules: ["Медкнижка обязательна — проверим на входе", "Форму выдаём", "Обед в 14:00"], rates: [["Повар", "3 500 ₽ за 8 ч"], ["Мойщик", "2 200 ₽ за 8 ч"]], reviews: [{ who: "Тимур Р.", stars: 5, tags: ["всё как в описании", "вовремя заплатили"], date: "14 окт" }, { who: "Сергей К.", stars: 5, tags: ["кормили"], date: "13 окт", reply: "Спасибо, Сергей! Ждём в пятницу" }, { who: "Ника Д.", stars: 4, tags: ["был бардак"], date: "9 окт" }] },
+  "Рыбный двор": { type: "Ресторан", rating: 4.6, count: 14, dist: [9, 3, 1, 1, 0] },
+  "Дюны": { type: "Кафе", rating: 4.7, count: 19, dist: [14, 4, 1, 0, 0] },
+  "Маяк": { type: "Кафе", rating: 4.7, count: 17, dist: [13, 3, 1, 0, 0] },
+  "Кофейня на Мира": { type: "Кофейня", rating: 4.5, count: 9, dist: [6, 2, 0, 1, 0] },
+  "Колосок": { type: "Пекарня", rating: 4.9, count: 27, dist: [24, 3, 0, 0, 0], rules: ["Ночная смена: вход через служебную дверь, код скажет администратор", "Головной убор и медкнижка обязательны", "Хлеб с собой после смены"], rates: [["Пекарь", "3 200 ₽ за 8 ч"], ["Продавец", "2 300 ₽ за 8 ч"], ["Кондитер", "3 400 ₽ за 8 ч"]], reviews: [{ who: "Илья Б.", stars: 5, tags: ["хлеб с собой", "вовремя заплатили"], date: "12 окт", reply: "Спасибо, Илья! Без вас ночь бы не вытянули" }, { who: "Лиза М.", stars: 5, tags: ["дружная смена"], date: "8 окт" }, { who: "Олег Т.", stars: 4, tags: ["всё как в описании"], date: "2 окт" }] },
+  "Зерно": { type: "Кофейня", rating: 4.8, count: 21, dist: [17, 3, 1, 0, 0], rules: ["Фартук выдаём", "Перед сменой 15 минут на настройку помола"], rates: [["Бариста", "2 600 ₽ за 8 ч"]], reviews: [{ who: "Маша С.", stars: 5, tags: ["кофе бесплатно", "всё как в описании"], date: "11 окт" }] },
+  "Бисквит": { type: "Кондитерская", rating: 4.7, count: 12, dist: [9, 2, 1, 0, 0] }
+};
+const STATS = {
+  sova: { posted: 23, closed: 21, closeTime: "1 ч 40 мин", noShows: 1, spend: 74300, avgRate: 445, market: 430, weeks: [3, 6, 8, 4], byRole: [["Повар", 14, "1 ч 10 мин", 3500], ["Мойщик", 7, "3 ч", 2200]], tip: "Мойщиков закрываете дольше всего — 3 часа. Поднимите ставку до 300 ₽/ч или выкладывайте смену за сутки." },
+  kolosok: { posted: 18, closed: 18, closeTime: "55 мин", noShows: 0, spend: 51800, avgRate: 405, market: 420, weeks: [3, 5, 6, 4], byRole: [["Пекарь", 9, "50 мин", 3200], ["Продавец", 6, "40 мин", 2300], ["Кондитер", 3, "2 ч 20 мин", 3400]], tip: "Кондитерам платите на 7% ниже рынка — поэтому их смены закрываются за 2 часа. +10% к ставке ускорит до 40 минут." }
+};
+const vmeta = name => { const m = VMETA[name] || {}, info = VENUE_INFO[name] || {}; return { type: m.type || "Заведение", rating: m.rating || 4.5, count: m.count || 0, dist: m.dist || [0, 0, 0, 0, 0], rules: m.rules || ["Подробные правила придут после назначения"], rates: m.rates || [], reviews: m.reviews || [], address: info.address || "", closed: info.closed || 90, paid: info.paid || 100 }; };
 const ROLE_DAT = { "Повар": "повару", "Мойщик": "мойщику", "Пекарь": "пекарю", "Кондитер": "кондитеру", "Бариста": "баристе", "Продавец": "продавцу" };
 const grad = v => { const h = HUES[v] || ["#555", "#888"]; return `linear-gradient(135deg, ${h[0]}, ${h[1]})`; };
 const rub = n => n.toLocaleString("ru-RU") + " ₽";
@@ -332,7 +355,7 @@ const ICON = {
 /* ---------- Данные-пример ---------- */
 function freshState() {
   return {
-    role: "free", tab: "shifts", vtab: "shifts", feed: "mine", cat: "all", point: "sova", newbie: false, waiting: [], penalty: null, calDay: "Завтра",
+    role: "free", tab: "shifts", vtab: "shifts", feed: "mine", cat: "all", point: "sova", newbie: false, waiting: [], penalty: null, calDay: "Завтра", replies: {},
     earned: 24500, earnedShifts: 7,
     offers: [
       { id: 1, venue: "Шкипер", role: "Повар", skills: "горячий цех · гриль", date: "Сегодня", time: "18:00–02:00", hours: 8, base: 3500, hot: 30, rating: 4.8, area: "Центр", dist: "1,2 км", reqs: ["медкнижка", "своя обувь"], gives: ["кормим", "такси после 23:00"], x: 47, y: 48 },
@@ -384,12 +407,13 @@ function render() {
     "Свайпни карточку: вправо — «Беру», влево — «Не могу». Или кнопки.",
     "Разделы сверху: Кухня · Пекарня · Кофейня. «Неделя» — календарь ставок.",
     "«Профиль» → «Режимы прототипа»: новичок ждёт решения заведения; неявка, пауза и «Оспорить».",
-    "Тапни карточку — подробности смены и отзывы о заведении.",
+    "Тапни карточку — подробности смены; «О заведении» — правила, отзывы, ставки.",
     "Первая смена подожжена: +30% к ставке.",
     "«Мои» → смена в пятницу: «Подтверждаю», «Еду», «Я на месте» и скан QR.",
     "«Карта» и «Все сегодня» — тап по смене открывает её.",
     "«Уведомления в боте» — как смены приходят пушем."
   ] : [
+    "«Заведение» — ваш рейтинг, статистика за месяц, ответы на отзывы в один тап.",
     "«Сова на Ленинском ▾» сверху — переключи на пекарню «Колосок».",
     "Сверху: Сергей не отметился по QR — «Не пришёл» запускает замену.",
     "Вчерашняя смена Тимура → «Оценить».",
@@ -418,7 +442,7 @@ function venueTabs() {
   const n = pointApps().length;
   return tabBtn("shifts", "Смены", S.vtab, "vtab") +
     `<button class="tab plus" data-a="vtab" data-v="new" aria-label="Новая смена"><span class="p">+</span></button>` +
-    tabBtn("apps", n ? `Отклики · ${n}` : "Отклики", S.vtab, "vtab") + tabBtn("team", "Команда", S.vtab, "vtab");
+    tabBtn("apps", n ? `Отклики · ${n}` : "Отклики", S.vtab, "vtab") + tabBtn("team", "Заведение", S.vtab, "vtab");
 }
 
 /* ---------- Фрилансер ---------- */
@@ -447,7 +471,7 @@ function freeView() {
   if (S.tab === "profile") return profileView();
   const vis = visibleOffers(), n = vis.length;
   const head = `<div class="row between"><div><div class="h1">Сергей, привет</div><div class="muted small">Смены под тебя: повар, пекарь, бариста · Центр, Московский</div></div>
-    <button class="tag good num" data-a="tab" data-v="profile" style="padding:6px 10px">Октябрь<br>${rub(S.earned)}</button></div>
+    <button class="tag good num" data-a="tab" data-v="profile" style="padding:8px 12px;font-size:16px;flex:none">+${rub(S.earned)}</button></div>
     <div class="chips" role="group" aria-label="Раздел">${CATS.map(c => `<button class="chip" data-a="cat" data-v="${c.id}" aria-pressed="${S.cat === c.id}">${c.name}</button>`).join("")}</div>
     <div class="seg" role="group" aria-label="Выдача"><button data-a="feed" data-v="mine" aria-pressed="${S.feed === "mine"}">Для тебя · ${n}</button><button data-a="feed" data-v="today" aria-pressed="${S.feed === "today"}">Сегодня</button><button data-a="feed" data-v="week" aria-pressed="${S.feed === "week"}">Неделя</button></div>`;
   if (S.penalty) return `<div class="pad">${head}${penaltyBanner()}<div class="empty"><div class="muted">Пока пауза, новые смены не приходят. Они вернутся 22 октября — или раньше, если спор решат в твою пользу.</div></div></div>`;
@@ -489,6 +513,45 @@ function waitingBlocks() {
     <div class="label">Прототип: что ответит заведение</div>
     <div class="actions"><button class="btn ghost" data-a="wno" data-v="${w.o.id}">Выбрало другого</button><button class="btn main" data-a="wyes" data-v="${w.o.id}">«Добро»</button></div></section>`).join("");
 }
+function ratingSummary(name) {
+  const m = vmeta(name), total = m.dist.reduce((a, b) => a + b, 0) || 1;
+  return `<div class="row" style="gap:16px;align-items:center"><div style="text-align:center;flex:none"><div class="sum num" style="font-size:40px">${String(m.rating).replace(".", ",")}</div><div class="muted small">${m.count} оценок</div></div>
+    <div class="grow" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">${m.dist.map((c, i) => `<div class="dist num"><span>${5 - i}★</span><span class="track"><i style="width:${Math.round(c / total * 100)}%"></i></span><span class="muted">${c}</span></div>`).join("")}</div></div>`;
+}
+function reviewItem(name, rv, i, canReply) {
+  const key = name + i, reply = rv.reply || S.replies[key];
+  return `<div class="review"><div class="row between"><b>${rv.who}</b><span class="muted small">${rv.date}</span></div><div style="color:var(--accent)">${"★".repeat(rv.stars)}<span style="color:var(--line)">${"★".repeat(5 - rv.stars)}</span></div><div class="chips">${rv.tags.map(t => `<span class="tag ${t === "был бардак" ? "" : "good"}">${t}</span>`).join("")}</div>${reply ? `<div class="reply"><b>Ответ заведения:</b> ${esc(reply)}</div>` : canReply ? `<div class="chips">${["Спасибо, ждём снова!", "Разберёмся и исправим", "Извините, такого больше не будет"].map(t => `<button class="chip" data-a="reply" data-k="${esc(key)}" data-v="${t}">${t}</button>`).join("")}</div>` : ""}</div>`;
+}
+function venueCard(name) {
+  const m = vmeta(name);
+  const shifts = [...S.offers, ...S.today].filter(o => o.venue === name);
+  return `<div class="dphoto" style="background:${grad(name)}"><span class="letter">${name[0]}</span><span class="vn">${esc(name)}</span></div>
+    <div class="muted">${m.type}${m.address ? " · " + m.address : ""}</div>
+    ${ratingSummary(name)}
+    <div class="stat num"><div><b>${m.closed}%</b><span>смен закрыто за сутки</span></div><div><b>${m.paid}%</b><span>оплатили вовремя</span></div><div><b>0</b><span>поздних отмен за месяц</span></div></div>
+    <div class="sec"><span class="label">Правила кухни</span>${m.rules.map(r => `<div class="small">• ${r}</div>`).join("")}</div>
+    ${m.rates.length ? `<div class="sec"><span class="label">Обычно платят</span>${m.rates.map(([r, v]) => `<div class="row between small"><span>${r}</span><b class="num">${v}</b></div>`).join("")}</div>` : ""}
+    <div class="sec"><span class="label">Отзывы фрилансеров</span>${m.reviews.length ? m.reviews.map((rv, i) => reviewItem(name, rv, i, false)).join("") : '<div class="muted small">Отзывов пока мало — появятся после первых смен.</div>'}</div>
+    ${shifts.length ? `<div class="sec"><span class="label">Открытые смены</span><div class="list">${shifts.map(o => `<button class="item" data-a="detail" data-v="${o.id}"><span class="grow"><span class="title">${o.role} · ${o.date}</span><br><span class="muted small">${o.time}</span></span><span class="money num">${rub(offerSum(o))}</span></button>`).join("")}</div></div>` : ""}`;
+}
+function venueRatingBlock() {
+  const p = curPoint();
+  return `<section class="box sec"><div class="h2">Ваш рейтинг</div>${ratingSummary(p.venue)}<button class="btn ghost" data-a="venue" data-v="${p.venue}">Как вас видят фрилансеры</button></section>`;
+}
+function statsBlock() {
+  const st = STATS[S.point], pct = Math.round(st.closed / st.posted * 100), max = Math.max(...st.weeks), diff = Math.round((st.avgRate / st.market - 1) * 100);
+  return `<section class="box sec"><div class="row between"><div class="h2">Октябрь</div><span class="muted small">${curPoint().name}</span></div>
+    <div class="stat num"><div><b>${st.closed} из ${st.posted}</b><span>смен закрыто · ${pct}%</span></div><div><b>${st.closeTime}</b><span>в среднем до «Беру»</span></div><div><b>${st.noShows}</b><span>неявок · ${Math.round(st.noShows / st.closed * 100)}%</span></div></div>
+    <div class="stat num"><div><b>${(st.spend / 1000).toFixed(1).replace(".", ",")} тыс ₽</b><span>заплатили фрилансерам</span></div><div><b>${st.avgRate} ₽/ч</b><span>ваша средняя ставка</span></div><div><b>${diff > 0 ? "+" : ""}${diff}%</b><span>к рынку, ${st.market} ₽/ч</span></div></div>
+    <div class="label">Закрыто смен по неделям</div>
+    <div class="bars num">${st.weeks.map((v, i) => `<div><i style="height:${Math.max(4, v / max * 56)}px"></i>${["1–5", "6–12", "13–19", "20–26"][i]}</div>`).join("")}</div>
+    <div class="list">${st.byRole.map(([r, n, t, sum]) => `<div class="row between small"><span><b>${r}</b> · ${n} смен</span><span class="muted num">за ${t} · ${rub(sum)}</span></div>`).join("")}</div>
+    <div class="hint"><span>💡 ${st.tip}</span></div></section>`;
+}
+function ownReviews() {
+  const v = curPoint().venue, m = vmeta(v);
+  return `<div class="label">Отзывы о вас</div>${m.reviews.map((rv, i) => reviewItem(v, rv, i, true)).join("")}`;
+}
 const STEP_NAMES = ["Назначено", "Подтвердил", "Еду", "На месте", "Оценка"];
 function stepsBar(step) {
   return `<div class="steps">${STEP_NAMES.map((_, i) => `<i class="${i <= step ? "on" : ""}"></i>`).join("")}</div>
@@ -513,7 +576,7 @@ function mineView() {
       <div class="chips"><button class="chip" data-a="toast" data-v="В прототипе файлы не открываются">📄 Меню.pdf</button><button class="chip" data-a="toast" data-v="В прототипе файлы не открываются">📄 Памятка новичку</button><button class="chip" data-a="toast" data-v="В прототипе файлы не открываются">🗺 Схема входа</button></div>
     </section>`).join("");
   return `<div class="pad"><div class="h1">Мои смены</div>${waitingBlocks()}${blocks || (S.waiting.length ? "" : `<div class="empty"><div class="mascot" style="background-image:url(${MASCOT})"></div><div class="muted">Пока пусто. Свайпни что-нибудь вправо во вкладке «Смены».</div></div>`)}
-    <div class="row between"><div class="h2">Октябрь</div><div class="muted num">${S.earnedShifts} смен · ${rub(S.earned)}</div></div>
+    <div class="row between"><div class="h2">Октябрь</div><div class="num"><b style="color:var(--good)">+${rub(S.earned)}</b> <span class="muted">· ${S.earnedShifts} смен</span></div></div>
     <div class="list">${S.penalty ? penaltyItem() : ""}${S.history.map(h => `<div class="item"><span class="thumb" style="background:${grad(h.venue)}">${h.venue[0]}</span><span class="grow"><span class="title">${esc(h.venue)}</span><br><span class="muted small">${h.date} · закрыта, деньги получил</span></span><span class="money num">${rub(h.sum)}</span></div>`).join("")}</div></div>`;
 }
 function mapView() {
@@ -631,7 +694,7 @@ function appsView() {
     <div class="actions"><button class="btn ghost" data-a="aswipe" data-v="left">Следующий</button><button class="btn main" data-a="aswipe" data-v="right">Добро</button></div></div>`;
 }
 function teamView() {
-  return `<div class="pad"><div class="h1">Команда</div>
+  return `<div class="pad"><div class="h1">${curPoint().name}</div>${venueRatingBlock()}${statsBlock()}${ownReviews()}
     <div class="label">Точки</div>
     <div class="list"><div class="item"><span class="thumb" style="background:${grad("Сова")}">С</span><span class="grow"><span class="title">Сова на Ленинском</span><br><span class="muted small">Ленинский проспект, 30 · ★ 4,9</span></span><button class="chip" data-a="qr">QR для кухни</button></div>
       <div class="item"><span class="thumb" style="background:${grad("Колосок")}">К</span><span class="grow"><span class="title">Колосок на Московском</span><br><span class="muted small">Пекарня · Московский проспект, 120 · ★ 4,9</span></span><button class="chip" data-a="qr">QR для кухни</button></div>
@@ -676,6 +739,7 @@ function detailBody(o) {
     <div class="sec"><span class="label">Что делать</span><div>${info.tasks || "Подробности — у менеджера после назначения."}</div></div>
     <div class="sec"><span class="label">Нужно и даём</span><div class="chips">${o.reqs.map(x => `<span class="tag">${x}</span>`).join("")}${o.gives.map(g => `<span class="tag good">${g}</span>`).join("")}</div></div>
     <div class="stat num"><div><b>${r}</b><span>оценка заведения</span></div><div><b>${info.closed || 90}%</b><span>смен закрыто за сутки</span></div><div><b>${info.paid || 100}%</b><span>оплатили вовремя</span></div></div>
+    <button class="btn ghost" data-a="venue" data-v="${esc(o.venue)}">О заведении: правила, отзывы, ставки</button>
     <div class="sec"><span class="label">Что пишут фрилансеры</span><div class="chips">${(info.tags || []).map(([t, n]) => `<span class="tag ${t === "был бардак" ? "" : "good"}">${t} · ${n}</span>`).join("")}</div></div>
     <div class="muted small">${S.newbie ? "Ты новичок: после «Беру» заведение посмотрит анкету и ответит — за 15 минут на срочную смену или за час на обычную." : "Телефон менеджера, меню и памятка придут сразу после «Беру»."}</div>
     <div class="actions"><button class="btn ghost" data-a="dskip" data-v="${o.id}">Не могу</button><button class="btn main" data-a="dtake" data-v="${o.id}">Беру</button></div>`;
@@ -840,6 +904,8 @@ function renderLayer() {
       <button class="check" data-a="vagain"><span class="bx ${sh.again ? "on" : ""}">${sh.again ? "✓" : ""}</span><span><b>Хотим снова</b><br><span class="muted">${v.name} будет получать ваши смены раньше других</span></span></button>
       <button class="btn main" data-a="vrated">Готово</button>
       <div class="muted small">${v.name} увидит оценку после того, как поставит свою, или через сутки.</div>`;
+  } else if (sh.type === "venue") {
+    body = venueCard(sh.name);
   } else if (sh.type === "points") {
     body = `<div class="h1">Точки сети</div><div class="muted small">ООО «Ночная сова» · ИНН проверен</div>
       <div class="list">${POINTS.map(p => `<button class="item" data-a="setpoint" data-v="${p.id}"><span class="thumb" style="background:${grad(p.venue)}">${p.venue[0]}</span><span class="grow"><span class="title">${p.name}</span><br><span class="muted small">${p.type} · ${p.addr}</span></span>${p.id === S.point ? '<span class="tag good">выбрана</span>' : ""}</button>`).join("")}
@@ -953,6 +1019,8 @@ const A = {
   feed: d => { S.feed = d.v; S.tab = "shifts"; render(); },
   cat: d => { S.cat = d.v; render(); },
   points: () => { S.sheet = { type: "points" }; renderLayer(); },
+  venue: d => { S.sheet = { type: "venue", name: d.v }; renderLayer(); const el = document.querySelector(".sheet"); if (el) el.scrollTop = 0; },
+  reply: d => { S.replies[d.k] = d.v; const top = screen.scrollTop; render(); screen.scrollTop = top; toast("Ответ опубликован — фрилансеры увидят его под отзывом"); },
   setpoint: d => { S.point = d.v; const p = curPoint(); if (!S.form.touched) { S.form.role = p.role; S.form.skills = []; S.form.sum = ROLE_SUM[p.role]; } S.sheet = null; render(); toast(`Точка: ${p.name}`); },
   calday: d => { S.calDay = d.v; render(); },
   newbie: d => { S.newbie = d.v === "1"; render(); toast(S.newbie ? "Теперь ты новичок: после «Беру» выбирает заведение" : "Снова проверенный: «Беру» — сразу твоя смена"); },
