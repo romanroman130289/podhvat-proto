@@ -471,7 +471,7 @@ function freeView() {
   if (S.tab === "profile") return profileView();
   const vis = visibleOffers(), n = vis.length;
   const head = `<div class="row between"><div><div class="h1">Сергей, привет</div><div class="muted small">Смены под тебя: повар, пекарь, бариста · Центр, Московский</div></div>
-    <button class="tag good num" data-a="tab" data-v="profile" style="padding:8px 12px;font-size:16px;flex:none">+${rub(S.earned)}</button></div>
+    <button class="tag good num" data-a="tab" data-v="profile" style="padding:6px 12px;flex:none;flex-direction:column;align-items:flex-end;gap:0;line-height:1.25"><span style="font-weight:500">Октябрь</span><b style="font-size:16px">+${rub(S.earned)}</b></button></div>
     <div class="chips" role="group" aria-label="Раздел">${CATS.map(c => `<button class="chip" data-a="cat" data-v="${c.id}" aria-pressed="${S.cat === c.id}">${c.name}</button>`).join("")}</div>
     <div class="seg" role="group" aria-label="Выдача"><button data-a="feed" data-v="mine" aria-pressed="${S.feed === "mine"}">Для тебя · ${n}</button><button data-a="feed" data-v="today" aria-pressed="${S.feed === "today"}">Сегодня</button><button data-a="feed" data-v="week" aria-pressed="${S.feed === "week"}">Неделя</button></div>`;
   if (S.penalty) return `<div class="pad">${head}${penaltyBanner()}<div class="empty"><div class="muted">Пока пауза, новые смены не приходят. Они вернутся 22 октября — или раньше, если спор решат в твою пользу.</div></div></div>`;
