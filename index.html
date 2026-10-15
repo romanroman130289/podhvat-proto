@@ -134,7 +134,8 @@ h1, h2, h3 { margin: 0; }
 .item .title { font-weight: 600; }
 .item .money { font-weight: 700; font-size: 16px; white-space: nowrap; }
 .thumb { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: #fff; font-family: var(--f-display); font-weight: 700; flex: none; }
-.attn { border-left: 0; background: var(--accent-soft); }
+.attn { border-left: 0; background: var(--accent-soft); flex-wrap: wrap; }
+.attn .grow { min-width: 55%; }
 .stat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .stat div { background: var(--surface); border-radius: 14px; padding: 10px; box-shadow: var(--shadow); }
 .stat b { display: block; font-family: var(--f-display); font-size: 18px; }
@@ -194,6 +195,30 @@ h1, h2, h3 { margin: 0; }
 .bars div { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-2); height: 100%; }
 .bars i { display: block; width: 100%; background: var(--accent); border-radius: 6px 6px 3px 3px; opacity: .85; }
 
+/* Подробная карточка смены */
+.dphoto { height: 140px; border-radius: 18px; position: relative; display: flex; align-items: flex-end; padding: 12px 14px; color: #fff; overflow: hidden; flex: none; }
+.dphoto .letter { position: absolute; right: -6px; top: -26px; font-family: var(--f-display); font-weight: 700; font-size: 150px; line-height: 1; opacity: .18; }
+.dphoto .vn { position: relative; font-weight: 700; font-size: 18px; }
+.sec { display: flex; flex-direction: column; gap: 6px; }
+
+/* Пуши бота */
+.chat .day { align-self: center; font-size: 12px; color: var(--ink-2); background: var(--surface); padding: 2px 10px; border-radius: 10px; }
+.push { padding: 0; overflow: hidden; }
+.push .pphoto { height: 84px; display: flex; align-items: flex-end; padding: 10px 12px; color: #fff; font-weight: 700; position: relative; overflow: hidden; }
+.push .pphoto .letter { position: absolute; right: -4px; top: -18px; font-family: var(--f-display); font-size: 100px; opacity: .18; line-height: 1; }
+.push .pb { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.push .psum { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin-top: 4px; }
+.ibtns { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 82%; margin-top: -4px; }
+.ibtns.three { grid-template-columns: repeat(3, 1fr); }
+.ibtns.one { grid-template-columns: 1fr; }
+.ibtns button { padding: 9px 6px; border-radius: 10px; background: var(--surface); box-shadow: var(--shadow); font-weight: 600; font-size: 14px; color: var(--accent); }
+.ibtns .wide { grid-column: 1 / -1; }
+.done { font-size: 13px; color: var(--good); font-weight: 600; margin-top: -4px; padding-left: 4px; }
+.menu-btn { margin: 8px; padding: 12px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.check { display: flex; gap: 10px; align-items: flex-start; text-align: left; background: var(--surface); border-radius: 16px; padding: 12px; box-shadow: var(--shadow); width: 100%; font-size: 14px; }
+.check .bx { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line); flex: none; display: grid; place-items: center; color: var(--accent-ink); font-size: 14px; }
+.check .bx.on { background: var(--accent); border-color: var(--accent); }
+
 .mstrip { display: none; }
 
 @media (max-width: 760px) {
@@ -219,7 +244,9 @@ h1, h2, h3 { margin: 0; }
       <div class="seg" role="group" aria-label="Роль"><button data-a="role" data-v="free">Фрилансер</button><button data-a="role" data-v="venue">Заведение</button></div>
     </div>
     <div class="field"><span class="label">Что попробовать</span><ol class="tries" id="tries"></ol></div>
-    <button class="pbtn" data-a="onboard">Регистрация фрилансера<small>Бот — контакт и роль, дальше анкета одним экраном</small></button>
+    <button class="pbtn" data-a="chat">Уведомления в боте<small>Как приходят смены, напоминания и отклики</small></button>
+    <button class="pbtn" data-a="onboard" data-v="free">Регистрация фрилансера<small>Бот — контакт и роль, дальше анкета одним экраном</small></button>
+    <button class="pbtn" data-a="onboard" data-v="venue">Регистрация заведения<small>Бот — контакт и ИНН с проверкой, дальше карточка</small></button>
     <div class="field"><span class="label">Тема</span>
       <div class="seg" role="group" aria-label="Тема"><button data-a="theme" data-v="auto">Как в Telegram</button><button data-a="theme" data-v="light">Светлая</button><button data-a="theme" data-v="dark">Тёмная</button></div>
     </div>
@@ -229,7 +256,7 @@ h1, h2, h3 { margin: 0; }
   <div class="mstrip">
     <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 14c0-4 3-7 7-7h6v6h-6v20H6z" fill="var(--accent)"/><path d="M22 7h5c4 0 7 3 7 7v19h-7V13h-5z" fill="var(--accent)"/></svg></div>
     <div class="seg" role="group" aria-label="Роль"><button data-a="role" data-v="free">Фрилансер</button><button data-a="role" data-v="venue">Заведение</button></div>
-    <button class="reg" data-a="onboard">Регистрация</button>
+    <button class="reg" data-a="chat">Бот</button><button class="reg" data-a="onboard">Регистрация</button>
   </div>
 
   <div class="phone" id="phone">
@@ -271,8 +298,8 @@ function freshState() {
       { id: 4, venue: "Дюны", role: "Мойщик", skills: "посудомоечная машина", date: "Вс, 19 окт", time: "09:00–17:00", hours: 8, base: 2200, rating: 4.7, area: "Центр", dist: "2,0 км", reqs: ["закрытая обувь"], gives: ["кормим"], x: 56, y: 40 }
     ],
     today: [
-      { venue: "Маяк", role: "Повар", time: "16:00–22:00", hours: 6, sum: 2900, area: "Ленинградский", x: 30, y: 33 },
-      { venue: "Кофейня на Мира", role: "Мойщик", time: "17:00–23:00", hours: 6, sum: 1700, area: "Центр", x: 26, y: 50 }
+      { id: 5, venue: "Маяк", role: "Повар", skills: "горячий цех", date: "Сегодня", time: "16:00–22:00", hours: 6, base: 2900, rating: 4.7, area: "Ленинградский", dist: "2,9 км", reqs: ["медкнижка"], gives: ["кормим"], x: 30, y: 33 },
+      { id: 6, venue: "Кофейня на Мира", role: "Мойщик", skills: "посудомоечная машина", date: "Сегодня", time: "17:00–23:00", hours: 6, base: 1700, rating: 4.5, area: "Центр", dist: "1,6 км", reqs: ["закрытая обувь"], gives: ["кормим", "такси после 23:00"], x: 26, y: 50 }
     ],
     mine: [
       { id: 101, venue: "Брусчатка", role: "Повар", date: "Пт, 17 окт", time: "17:00–23:00", hours: 6, sum: 2700, step: 1, address: "Ленинский проспект, 30", manager: "Анна, управляющий", phone: "+7 911 000-12-34" }
@@ -281,7 +308,8 @@ function freshState() {
       { venue: "Сова", date: "13 окт", sum: 3500 }, { venue: "Маяк", date: "11 окт", sum: 2900 }, { venue: "Шкипер", date: "10 окт", sum: 4200 }, { venue: "Дюны", date: "6 окт", sum: 2200 }
     ],
     vshifts: [
-      { id: 201, role: "Повар", date: "Сегодня", time: "18:00–02:00", hours: 8, sum: 3500, status: "Едет", who: "Сергей К. · ★ 4,9", step: 2 },
+      { id: 201, role: "Повар", date: "Сегодня", time: "18:00–02:00", hours: 8, sum: 3500, status: "Смена идёт 30 мин · QR не отсканирован", who: "Сергей К. не отметился", step: 2, attn: "noshow", name: "Сергей" },
+      { id: 205, role: "Повар", date: "Вчера", time: "10:00–18:00", hours: 8, sum: 3500, status: "Закончилась", who: "Тимур Р. · пришёл по QR в 09:54", step: 4, attn: "rate", name: "Тимур" },
       { id: 202, role: "Повар", date: "Сб, 18 окт", time: "12:00–20:00", hours: 8, sum: 3600, status: "Отклик новичка", who: "2 новичка ждут решения", step: 0, attn: "apps" },
       { id: 203, role: "Мойщик", date: "Вс, 19 окт", time: "09:00–17:00", hours: 8, sum: 2200, status: "Ищем · предложили 10", who: "За 3 часа никто не взял", step: 0, attn: "fire" },
       { id: 204, role: "Повар", date: "Пн, 20 окт", time: "10:00–18:00", hours: 8, sum: 3500, status: "Подтвердил", who: "Тимур Р. · ★ 4,7", step: 1 }
@@ -291,7 +319,7 @@ function freshState() {
       { name: "Тимофей", age: 24, color: ["#1D4ED8", "#60A5FA"], role: "Повар", exp: "1–3 года", skills: ["гриль", "горячий цех"], worked: "шаурмичная, банкеты в отеле", shift: 202 }
     ],
     form: { role: "Повар", day: "Завтра", start: "18:00", hours: 8, sum: 3500, people: 1, med: true, exp: "любой", skills: ["горячий цех"], bring: ["своя обувь"], gives: ["кормим"] },
-    sheet: null, scan: false, onb: null, pending: null
+    sheet: null, scan: false, onb: null, pending: null, chat: false, pushDone: {}
   };
 }
 let S = freshState();
@@ -302,17 +330,21 @@ function render() {
   document.querySelectorAll('[data-a="role"]').forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === S.role)));
   document.getElementById("tries").innerHTML = (S.role === "free" ? [
     "Свайпни карточку: вправо — «Беру», влево — «Не могу». Или кнопки.",
+    "Тапни карточку — подробности смены и отзывы о заведении.",
     "Первая смена подожжена: +30% к ставке.",
     "«Мои» → смена в пятницу: «Подтверждаю», «Еду», «Я на месте» и скан QR.",
-    "«Карта» — смены рядом точками.",
-    "«Профиль» — значки надёжности и заработок."
+    "«Карта» и «Все сегодня» — тап по смене открывает её.",
+    "«Уведомления в боте» — как смены приходят пушем."
   ] : [
+    "Сверху: Сергей не отметился по QR — «Не пришёл» запускает замену.",
+    "Вчерашняя смена Тимура → «Оценить».",
     "«+» — новая смена одной формой; следи за счётчиком подходящих.",
     "Мойщик на воскресенье → «🔥 Поджечь».",
     "«Отклики» — новички стопкой: «Добро» / «Следующий».",
-    "«Команда» — пригласить коллегу и QR для кухни."
+    "«Регистрация заведения» — бот, ИНН с проверкой, карточка."
   ]).map(t => `<li>${t}</li>`).join("");
 
+  if (S.chat) { renderChat(); return; }
   if (S.onb) { renderOnboarding(); return; }
   document.getElementById("tgTitle").innerHTML = 'Подхват<small>тестовая версия</small>';
   document.getElementById("tabs").hidden = false;
@@ -361,11 +393,11 @@ function freeView() {
     <button class="tag good num" data-a="tab" data-v="profile" style="padding:6px 10px">Октябрь<br>${rub(S.earned)}</button></div>
     <div class="seg" role="group" aria-label="Выдача"><button data-a="feed" data-v="mine" aria-pressed="${S.feed === "mine"}">Для тебя · ${n}</button><button data-a="feed" data-v="today" aria-pressed="${S.feed === "today"}">Все сегодня</button></div>`;
   if (S.feed === "today") {
-    const all = [...S.offers.filter(o => o.date === "Сегодня").map(o => ({ venue: o.venue, role: o.role, time: o.time, hours: o.hours, sum: offerSum(o), area: o.area, hot: o.hot })), ...S.today];
+    const all = [...S.offers.filter(o => o.date === "Сегодня"), ...S.today];
     return `<div class="pad">${head}<div class="muted small">Все горящие смены города по твоим ролям — даже те, что не дошли до тебя волной.</div>
-      <div class="list">${all.map(t => `<button class="item" data-a="toast" data-v="В прототипе: откроется карточка смены с «Беру»"><span class="thumb" style="background:${grad(t.venue)}">${t.venue[0]}</span>
+      <div class="list">${all.map(t => `<button class="item" data-a="detail" data-v="${t.id}"><span class="thumb" style="background:${grad(t.venue)}">${t.venue[0]}</span>
         <span class="grow"><span class="title">${t.role} · ${esc(t.venue)}</span><br><span class="muted small">Сегодня ${t.time} · ${t.area}</span></span>
-        <span class="money num">${t.hot ? "🔥 " : ""}${rub(t.sum)}</span></button>`).join("")}</div></div>`;
+        <span class="money num">${t.hot ? "🔥 " : ""}${rub(offerSum(t))}</span></button>`).join("")}</div></div>`;
   }
   if (!n) return `<div class="pad">${head}<div class="empty"><div class="mascot" style="background-image:url(${MASCOT})"></div><div class="h2">На сегодня всё разобрали</div><div class="muted">Подхватыч уже ищет ещё — пришлём, как только появятся.</div><button class="btn ghost" data-a="feed" data-v="today">Все смены сегодня</button></div></div>`;
   const cards = S.offers.slice(0, 3).map((o, i) => offerCard(o, i === 0 ? "top" : i === 1 ? "under" : "under2")).reverse().join("");
@@ -400,7 +432,7 @@ function mineView() {
     <div class="list">${S.history.map(h => `<div class="item"><span class="thumb" style="background:${grad(h.venue)}">${h.venue[0]}</span><span class="grow"><span class="title">${esc(h.venue)}</span><br><span class="muted small">${h.date} · закрыта, деньги получил</span></span><span class="money num">${rub(h.sum)}</span></div>`).join("")}</div></div>`;
 }
 function mapView() {
-  const pins = [...S.offers.map(o => ({ x: o.x, y: o.y, sum: offerSum(o), hot: o.hot, venue: o.venue })), ...S.today.map(t => ({ x: t.x, y: t.y, sum: t.sum, venue: t.venue }))];
+  const pins = [...S.offers, ...S.today].map(o => ({ id: o.id, x: o.x, y: o.y, sum: offerSum(o), hot: o.hot, venue: o.venue }));
   return `<div class="map">
     <svg viewBox="0 0 390 560" preserveAspectRatio="none" aria-hidden="true">
       <path d="M-10 300 C60 280 110 330 170 310 S280 250 330 280 S400 300 410 290 L410 318 C380 330 340 300 300 312 S200 350 160 342 S60 310 -10 330 Z" fill="var(--water)"/>
@@ -408,7 +440,7 @@ function mapView() {
       <g stroke="var(--line)" stroke-width="7" fill="none" stroke-linecap="round"><path d="M20 120 L370 200"/><path d="M180 0 L210 560"/><path d="M0 460 L390 400"/><path d="M60 0 C90 200 60 380 110 560"/><path d="M300 0 C280 200 330 380 300 560"/></g>
       <g font-family="Onest, sans-serif" font-size="12" fill="var(--ink-2)" font-weight="600"><text x="96" y="80">Ленинградский</text><text x="250" y="400">Московский</text><text x="40" y="250">Центральный</text><text x="212" y="296" font-size="11">Преголя</text><text x="236" y="140" font-size="11">Верхний пруд</text></g>
     </svg>
-    ${pins.map(p => `<button class="pin ${p.hot ? "hot" : ""} num" style="left:${p.x}%;top:${p.y}%" data-a="toast" data-v="${esc(p.venue)}: ${rub(p.sum)} — откроется карточка смены">${p.hot ? "🔥 " : ""}${rub(p.sum)}</button>`).join("")}
+    ${pins.map(p => `<button class="pin ${p.hot ? "hot" : ""} num" style="left:${p.x}%;top:${p.y}%" data-a="detail" data-v="${p.id}" aria-label="${esc(p.venue)}">${p.hot ? "🔥 " : ""}${rub(p.sum)}</button>`).join("")}
     <span class="me-dot" style="left:45%;top:58%" title="Ты здесь"></span>
     <div class="box" style="position:absolute;left:12px;right:12px;top:12px;display:flex;justify-content:space-between;align-items:center"><span><b>${pins.length} смен рядом</b><br><span class="muted small">Оранжевые — горят, ставка выше</span></span><button class="chip" data-a="feed-list">Списком</button></div>
   </div>`;
@@ -441,7 +473,7 @@ function venueView() {
   const attn = S.vshifts.filter(v => v.attn);
   return `<div class="pad">
     <div class="row between"><div><div class="h1">Смены</div><button class="muted small" data-a="toast" data-v="В прототипе: выбор точки сети">Сова на Ленинском ▾</button></div><span class="avatar" style="background:${grad("Сова")}">Р</span></div>
-    ${attn.length ? `<div class="label">Ждёт вашего ответа</div><div class="list">${attn.map(v => `<div class="item attn"><span class="grow"><span class="title">${v.role} · ${v.date}</span><br><span class="small">${v.who}</span></span>${v.attn === "fire" ? `<button class="btn main" style="padding:10px 12px;font-size:14px" data-a="fire" data-v="${v.id}">🔥 Поджечь</button>` : `<button class="btn main" style="padding:10px 12px;font-size:14px" data-a="vtab" data-v="apps">Выбрать</button>`}</div>`).join("")}</div>` : ""}
+    ${attn.length ? `<div class="label">Ждёт вашего ответа</div><div class="list">${attn.map(v => `<div class="item attn"><span class="grow"><span class="title">${v.role} · ${v.date}</span><br><span class="small">${v.who}</span></span>${attnButtons(v)}</div>`).join("")}</div>` : ""}
     <div class="label">Все смены</div>
     <div class="list">${S.vshifts.map(v => `<div class="box" style="display:flex;flex-direction:column;gap:10px">
       <div class="row between"><div><div class="h2">${v.role} · ${v.date}</div><div class="muted small">${v.time} · ${v.hours} ч</div></div><div class="money num">${v.fired ? `<span class="tag hot">🔥 +${v.fired}%</span> ` : ""}${rub(v.sum)}</div></div>
@@ -518,11 +550,108 @@ function teamView() {
     <div class="muted small">Вопросы по смене — «Вышел?», выбор новичка — приходят всем менеджерам точки. Засчитывается первый ответ.</div></div>`;
 }
 
+function attnButtons(v) {
+  const b = (a, label, ghost) => `<button class="btn ${ghost ? "ghost" : "main"}" style="padding:10px 12px;font-size:14px" data-a="${a}" data-v="${v.id}">${label}</button>`;
+  if (v.attn === "fire") return b("fire", "🔥 Поджечь");
+  if (v.attn === "noshow") return `<span class="row" style="gap:6px">${b("here", "На месте", true)}${b("noshow", "Не пришёл")}</span>`;
+  if (v.attn === "rate") return b("vrate", "Оценить");
+  return `<button class="btn main" style="padding:10px 12px;font-size:14px" data-a="vtab" data-v="apps">Выбрать</button>`;
+}
+function applyHere(id) { const v = S.vshifts.find(x => x.id === id); if (!v || v.attn !== "noshow") return; v.status = "На месте · отметили вручную"; v.who = `${v.name} К. · ★ 4,9`; v.step = 3; delete v.attn; }
+function applyNoShow(id) { const v = S.vshifts.find(x => x.id === id); if (!v || v.attn !== "noshow") return; v.status = "Неявка · срочно ищем замену, разослали 18"; v.who = `${v.name} — 2 штрафа, может оспорить`; v.step = 0; delete v.attn; }
+function applyFire(id, pct) { const v = S.vshifts.find(x => x.id === id); if (!v) return; v.base = v.base || v.sum; v.fired = pct; v.sum = Math.round(v.base * (1 + pct / 100) / 50) * 50; v.status = "Ищем · 🔥 разослали 23 подходящим"; v.who = "Повышенная ставка видна всем"; delete v.attn; }
+
+/* ---------- Подробности смены ---------- */
+const VENUE_INFO = {
+  "Шкипер": { address: "ул. Шевченко, 11", tasks: "Гриль-станция и горячий цех, вечерний поток до 120 гостей. Шеф на месте, заготовки готовы.", closed: 94, paid: 100, tags: [["вовремя заплатили", 28], ["кормили", 22], ["дружная кухня", 15]] },
+  "Сова": { address: "Ленинский проспект, 30", tasks: "Холодный цех: салаты, закуски, нарезка. Утром — завтраки по меню.", closed: 97, paid: 100, tags: [["всё как в описании", 19], ["вовремя заплатили", 18], ["кормили", 11]] },
+  "Рыбный двор": { address: "Рыбная деревня, ул. Октябрьская", tasks: "Заготовка к вечеру: рыба, овощи, соусы. Без раздачи.", closed: 88, paid: 96, tags: [["вовремя заплатили", 9], ["был бардак", 2]] },
+  "Дюны": { address: "ул. Баранова, 34", tasks: "Посудомоечная машина и кухонная посуда, банкет на 60 человек.", closed: 91, paid: 100, tags: [["кормили", 14], ["дружная кухня", 7]] },
+  "Маяк": { address: "ул. Горького, 55", tasks: "Горячий цех: бизнес-ланчи и вечер.", closed: 90, paid: 98, tags: [["вовремя заплатили", 12], ["кормили", 5]] },
+  "Кофейня на Мира": { address: "проспект Мира, 18", tasks: "Кухонная посуда и чистота кухни, вечерняя смена.", closed: 86, paid: 100, tags: [["кормили", 6]] }
+};
+const findShift = id => [...S.offers, ...S.today].find(o => o.id === +id);
+function detailBody(o) {
+  const info = VENUE_INFO[o.venue] || {}, sum = offerSum(o), r = String(o.rating).replace(".", ",");
+  return `<div class="dphoto" style="background:${grad(o.venue)}"><span class="letter">${o.venue[0]}</span>${o.hot ? `<span class="tag hot" style="position:absolute;left:12px;top:12px">🔥 +${o.hot}% · горит</span>` : ""}<span class="vn">${esc(o.venue)} · ★ ${r}</span></div>
+    <div><div class="sum num">${rub(sum)}${o.hot ? `<s>${rub(o.base)}</s>` : ""}</div><div class="muted num">${perHour(sum, o.hours)} ₽/ч · ${o.hours} ч</div></div>
+    <div class="sec"><div class="h2">${o.role} · ${o.skills}</div><div>${o.date}, ${o.time}</div><div class="muted">${info.address ? info.address + " · " : ""}${o.area} · ${o.dist}</div></div>
+    <div class="sec"><span class="label">Что делать</span><div>${info.tasks || "Подробности — у менеджера после назначения."}</div></div>
+    <div class="sec"><span class="label">Нужно и даём</span><div class="chips">${o.reqs.map(x => `<span class="tag">${x}</span>`).join("")}${o.gives.map(g => `<span class="tag good">${g}</span>`).join("")}</div></div>
+    <div class="stat num"><div><b>${r}</b><span>оценка заведения</span></div><div><b>${info.closed || 90}%</b><span>смен закрыто за сутки</span></div><div><b>${info.paid || 100}%</b><span>оплатили вовремя</span></div></div>
+    <div class="sec"><span class="label">Что пишут фрилансеры</span><div class="chips">${(info.tags || []).map(([t, n]) => `<span class="tag ${t === "был бардак" ? "" : "good"}">${t} · ${n}</span>`).join("")}</div></div>
+    <div class="muted small">Телефон менеджера, меню и памятка придут сразу после «Беру».</div>
+    <div class="actions"><button class="btn ghost" data-a="dskip" data-v="${o.id}">Не могу</button><button class="btn main" data-a="dtake" data-v="${o.id}">Беру</button></div>`;
+}
+
+/* ---------- Пуши бота ---------- */
+function renderChat() {
+  document.getElementById("tabs").hidden = true;
+  document.getElementById("tgTitle").innerHTML = 'Подхват<small>бот</small>';
+  renderLayer();
+  const D = S.pushDone;
+  const btns = (key, list, cls) => D[key] ? `<div class="done">✓ ${D[key]}</div>` : `<div class="ibtns ${cls || ""}">${list.map(([v, label, wide]) => `<button class="${wide ? "wide" : ""}" data-a="push" data-k="${key}" data-v="${v}">${label}</button>`).join("")}</div>`;
+  let msgs;
+  if (S.role === "free") {
+    const o = S.pushOffer;
+    const offer = o ? `<div class="bub push"><div class="pphoto" style="background:${grad(o.venue)}"><span class="letter">${o.venue[0]}</span>${o.hot ? `🔥 +${o.hot}% · горит` : "Новая смена для тебя"}</div>
+      <div class="pb"><b>${o.role} · ${o.skills}</b><span>${esc(o.venue)} ★ ${String(o.rating).replace(".", ",")} · ${o.area}, ${o.dist}</span><span>${o.date}, ${o.time}</span><span class="psum num">${rub(offerSum(o))}</span><span class="muted small num">за смену · ${perHour(offerSum(o), o.hours)} ₽/ч</span></div></div>
+      ${btns("offer", [["take", "Беру"], ["skip", "Не могу"], ["open", "Подробнее в приложении", true]])}` : "";
+    msgs = `<div class="day">Сегодня</div>${offer}
+      <div class="bub">Завтра в 17:00 тебя ждут в «Брусчатке». Подтверди, что выйдешь.</div>${btns("confirm", [["ok", "Подтверждаю"], ["no", "Не смогу"]])}
+      <div class="bub">Через 2 часа смена в «Брусчатке», Ленинский проспект, 30. Нажми «Еду», когда выйдешь.</div>${btns("go", [["go", "Еду"]], "one")}
+      <div class="bub">Как прошла смена в «Сове»? Оценка — 10 секунд.</div>${btns("rate", [["rate", "Оценить в приложении"]], "one")}`;
+  } else {
+    msgs = `<div class="day">Сегодня</div>
+      <div class="bub">Аня, 19, откликнулась на «Повар · Сб, 18 окт». Опыт до года: заготовка, холодный цех. Новичок — выбираете вы.</div>${btns("app", [["yes", "Добро"], ["next", "Следующий"], ["apps", "Открыть отклики", true]])}
+      <div class="bub">Сергей не отсканировал QR, смена идёт 30 минут. Он на месте?</div>${btns("noshow", [["here", "На месте"], ["no", "Не пришёл"]])}
+      <div class="bub">Мойщик на Вс, 19 окт: за 3 часа никто не взял. Поджечь?</div>${btns("fire", [["10", "+10%"], ["30", "+30%"], ["50", "+50%"]], "three")}
+      <div class="bub">Тимур закончил смену. Оцените его — он увидит оценку после своей.</div>${btns("vrate", [["rate", "Оценить в приложении"]], "one")}`;
+  }
+  screen.innerHTML = `<div style="display:flex;flex-direction:column;height:100%"><div class="chat">${msgs}</div><button class="menu-btn" data-a="chatclose">Открыть Подхват</button></div>`;
+}
+
+/* ---------- Регистрация заведения ---------- */
+function renderVenueOnb() {
+  const o = S.onb;
+  if (o.step >= 6) { document.getElementById("tgTitle").innerHTML = 'Подхват<small>тестовая версия</small>'; screen.innerHTML = o.step === 6 ? venueFormView() : venueDoneView(); return; }
+  document.getElementById("tgTitle").innerHTML = 'Подхват<small>бот</small>';
+  const m = [`<div class="bub">Привет! Это Подхват — закрываем смены в кафе и ресторанах Калининграда.</div>`];
+  let kbd = `<button data-a="toast" data-v="В прототипе показан путь заведения">Ищу смены</button><button data-a="vonb" data-v="1">Я из заведения</button>`;
+  if (o.step >= 1) { m.push(`<div class="bub me">Я из заведения</div>`, `<div class="bub">Поделись контактом — так мы узнаем твой номер.</div>`); kbd = `<button data-a="vonb" data-v="2">📱 Поделиться контактом</button>`; }
+  if (o.step >= 2) { m.push(`<div class="bub me">📱 Контакт</div>`, `<div class="bub">Как тебя зовут и кем работаешь? Имя из Telegram — Роман.</div>`); kbd = ["Владелец", "Управляющий", "Шеф", "Администратор"].map(r => `<button data-a="vonb" data-v="3" data-r="${r}">${r}</button>`).join(""); }
+  if (o.step >= 3) { m.push(`<div class="bub me">Роман, ${o.post.toLowerCase()}</div>`, `<div class="bub">ИНН заведения — он есть на любом вашем кассовом чеке.</div>`); kbd = `<button data-a="vonb" data-v="4">Ввести ИНН: 3906123456 (пример)</button>`; }
+  if (o.step >= 4) { m.push(`<div class="bub me num">3906123456</div>`, `<div class="bub">Нашёл в реестре: <b>ООО «Ночная сова»</b>, действует, Калининград. Это вы?</div>`); kbd = `<button data-a="vonb" data-v="5">Да, это мы</button><button data-a="toast" data-v="Бот попросит проверить цифры; со второй неудачи — к модератору">Нет, проверить цифры</button>`; }
+  if (o.step >= 5) { m.push(`<div class="bub me">Да, это мы</div>`, `<div class="bub">Проверено ✓ Осталась карточка заведения — одним экраном.<button class="inline" data-a="vonb" data-v="6">Заполнить карточку</button></div>`); kbd = ""; }
+  screen.innerHTML = `<div style="display:flex;flex-direction:column;height:100%"><div class="chat">${m.join("")}</div>${kbd ? `<div class="kbd">${kbd}</div>` : ""}</div>`;
+}
+function venueFormView() {
+  const v = S.onb.v;
+  const chip = (g, val, multi) => `<button class="chip" data-a="vf" data-g="${g}" data-v="${esc(val)}" aria-pressed="${multi ? v[g].includes(val) : v[g] === val}">${val}</button>`;
+  return `<div class="pad" style="padding-bottom:0"><div class="h1">Карточка заведения</div>
+    <div class="box row between"><span><b>ООО «Ночная сова»</b><br><span class="muted small num">ИНН 3906123456</span></span><span class="tag good">✓ ИНН проверен</span></div>
+    <div class="field"><span class="label">Как называется у гостей</span><div class="box"><b>Сова</b></div></div>
+    <div class="field"><span class="label">Адрес</span><div class="box">Ленинский проспект, 30</div></div>
+    <div class="field"><span class="label">Район</span><div class="chips">${["Центр", "Ленинградский", "Московский"].map(r => chip("area", r)).join("")}</div></div>
+    <div class="field"><span class="label">Тип</span><div class="chips">${["Ресторан", "Кафе", "Бар", "Столовая", "Банкетный зал", "Пиццерия"].map(r => chip("type", r)).join("")}</div></div>
+    <div class="field"><span class="label">Кого чаще ищете</span><div class="chips">${["повар", "мойщик", "официант", "бармен"].map(r => chip("roles", r, true)).join("")}</div></div>
+    <button class="check" data-a="vaccept"><span class="bx ${v.accept ? "on" : ""}">${v.accept ? "✓" : ""}</span><span>Принимаю правила: платим фрилансеру сами в конце смены; отмена позже чем за 12 часов видна фрилансерам; первые 3 месяца бесплатно; политика обработки данных</span></button>
+  </div><div class="mainbar"><button class="btn main" data-a="vdone">${v.accept ? "Готово" : "Сначала примите правила"}</button></div>`;
+}
+function venueDoneView() {
+  return `<div class="pad"><div class="empty" style="padding:16px 8px"><div class="mascot" style="background-image:url(${MASCOT})"></div><div class="h1">Готово! Так вас увидят фрилансеры</div></div>
+    <div class="box" style="padding:0;overflow:hidden"><div class="photo" style="background:${grad("Сова")};height:120px"><span class="letter">С</span><span class="vn">Сова <span class="tag" style="background:rgba(255,255,255,.2);color:#fff">новое</span></span></div>
+      <div class="cbody"><div class="chips"><span class="tag good">✓ ИНН проверен</span><span class="tag">${S.onb.v.type}</span><span class="tag">${S.onb.v.area}</span></div><div class="muted small">Ленинский проспект, 30 · рейтинг появится после первых смен</div></div></div>
+    <button class="btn main" data-a="vfirst">Выложить первую смену</button>
+    <button class="btn ghost" data-a="vinvite">Пригласить коллегу</button></div>`;
+}
+
 /* ---------- Регистрация через бота ---------- */
 function renderOnboarding() {
   const o = S.onb;
   document.getElementById("tabs").hidden = true;
   renderLayer();
+  if (o.kind === "venue") { renderVenueOnb(); return; }
   if (o.step >= 3) {
     document.getElementById("tgTitle").innerHTML = 'Подхват<small>тестовая версия</small>';
     screen.innerHTML = anketaView();
@@ -596,6 +725,24 @@ function renderLayer() {
       <div class="h2">Деньги получил?</div>
       <div class="actions"><button class="btn ghost" data-a="rated" data-v="no">Не получил</button><button class="btn ok" data-a="rated" data-v="yes">Получил</button></div>
       <div class="muted small">Оценку заведения увидишь после того, как оставишь свою.</div>`;
+  } else if (sh.type === "detail") {
+    const o = findShift(sh.id);
+    if (!o) { S.sheet = null; L.innerHTML = ""; return; }
+    body = detailBody(o);
+  } else if (sh.type === "noshow") {
+    const v = S.vshifts.find(x => x.id === sh.id);
+    body = `<div class="h1">${v.name} не пришёл?</div>
+      <div class="muted">Смена идёт 30 минут, QR у входа на кухню не отсканирован, геопозиции рядом нет.</div>
+      <div class="box sec"><b>Что будет</b><span class="small">• ${v.name} получит 2 штрафа. Вторая неявка за месяц — пауза 7 дней.</span><span class="small">• Он сможет оспорить — модератор разберёт за сутки.</span><span class="small">• Замену ищем сразу: смена уходит всем подходящим как срочная.</span></div>
+      <button class="btn main" data-a="noshowok">Не пришёл — искать замену</button><button class="btn ghost" data-a="here" data-v="${v.id}">Он на месте, забыл отметиться</button>`;
+  } else if (sh.type === "vrate") {
+    const v = S.vshifts.find(x => x.id === sh.id);
+    body = `<div class="h1">Как отработал ${v.name}?</div><div class="muted small">${v.role} · ${v.date}, ${v.time}</div>
+      <div class="stars">${[1, 2, 3, 4, 5].map(i => `<button data-a="vstar" data-v="${i}" class="${i <= sh.stars ? "on" : ""}" aria-label="${i}">★</button>`).join("")}</div>
+      <div class="chips">${["пришёл вовремя", "чисто работает", "быстрый", "вежливый", "опоздал", "ушёл раньше"].map(t => `<button class="chip" data-a="vtag" data-v="${t}" aria-pressed="${sh.tags.includes(t)}">${t}</button>`).join("")}</div>
+      <button class="check" data-a="vagain"><span class="bx ${sh.again ? "on" : ""}">${sh.again ? "✓" : ""}</span><span><b>Хотим снова</b><br><span class="muted">${v.name} будет получать ваши смены раньше других</span></span></button>
+      <button class="btn main" data-a="vrated">Готово</button>
+      <div class="muted small">${v.name} увидит оценку после того, как поставит свою, или через сутки.</div>`;
   }
   L.innerHTML = `<div class="layer" data-a="closesheet"><div class="sheet" data-stop="1"><div class="grab"></div>${body}</div></div>`;
 }
@@ -609,11 +756,11 @@ function toast(t) {
 /* ---------- Свайпы ---------- */
 function mountStacks() {
   const st = document.getElementById("offerStack");
-  if (st) dragify(st, d => takeOffer(d), d => skipOffer(d));
+  if (st) dragify(st, () => takeOffer(), () => skipOffer(), card => { S.sheet = { type: "detail", id: +card.dataset.id }; renderLayer(); });
   const ap = document.getElementById("appStack");
   if (ap) dragify(ap, d => pickApplicant(d), d => nextApplicant(d));
 }
-function dragify(stack, onRight, onLeft) {
+function dragify(stack, onRight, onLeft, onTap) {
   const card = stack.querySelector(".card.top");
   if (!card) return;
   let x0 = 0, dx = 0, active = false;
@@ -629,7 +776,7 @@ function dragify(stack, onRight, onLeft) {
   const end = () => {
     if (!active) return; active = false; card.classList.remove("dragging");
     if (dx > 90) fly(card, 1, onRight); else if (dx < -90) fly(card, -1, onLeft);
-    else { card.style.transform = ""; yes.style.opacity = 0; no.style.opacity = 0; }
+    else { card.style.transform = ""; yes.style.opacity = 0; no.style.opacity = 0; if (Math.abs(dx) < 6 && onTap) onTap(card); }
   };
   card.addEventListener("pointerup", end); card.addEventListener("pointercancel", end);
 }
@@ -646,10 +793,13 @@ function flyTop(stackId, dir, onRight, onLeft) {
 }
 
 /* ---------- Действия ---------- */
-function takeOffer() {
-  const o = S.offers.shift();
+function takeOffer() { if (S.offers[0]) takeShift(S.offers[0]); }
+function takeShift(o) {
+  const from = S.offers.includes(o) ? "offers" : "today";
   if (S.pending) commitPending();
-  S.pending = { o, left: 5 };
+  S[from] = S[from].filter(x => x !== o);
+  S.sheet = null;
+  S.pending = { o, from, left: 5 };
   render(); renderSnack();
   S.pending.timer = setInterval(() => {
     if (!S.pending) return;
@@ -660,9 +810,12 @@ function takeOffer() {
 function commitPending() {
   const p = S.pending; if (!p) return;
   clearInterval(p.timer); S.pending = null;
-  const o = p.o;
-  S.mine.unshift({ id: 300 + o.id, venue: o.venue, role: o.role, date: o.date, time: o.time, hours: o.hours, sum: offerSum(o), step: 0, address: o.venue === "Шкипер" ? "ул. Шевченко, 11" : "адрес придёт после назначения", manager: "Ольга, администратор", phone: "+7 911 000-56-78" });
+  S.mine.unshift(mineFrom(p.o));
   renderSnack(); render();
+}
+function mineFrom(o) {
+  const info = VENUE_INFO[o.venue] || {};
+  return { id: 300 + o.id, venue: o.venue, role: o.role, date: o.date, time: o.time, hours: o.hours, sum: offerSum(o), step: 0, address: info.address || "адрес — в карточке смены", manager: "Ольга, администратор", phone: "+7 911 000-56-78" };
 }
 function renderSnack() {
   const el = document.getElementById("snack");
@@ -681,14 +834,14 @@ function pickApplicant() {
 function nextApplicant() { S.applicants.push(S.applicants.shift()); render(); }
 
 const A = {
-  role: d => { S.role = d.v; S.onb = null; S.sheet = null; render(); },
+  role: d => { S.role = d.v; S.onb = null; S.chat = false; S.sheet = null; render(); },
   tab: d => { S.tab = d.v; render(); screen.scrollTop = 0; },
   vtab: d => { S.vtab = d.v; render(); screen.scrollTop = 0; },
   feed: d => { S.feed = d.v; S.tab = "shifts"; render(); },
   "feed-list": () => { S.feed = "today"; S.tab = "shifts"; render(); },
   swipe: d => flyTop("offerStack", d.v === "right" ? 1 : -1, takeOffer, skipOffer),
   aswipe: d => flyTop("appStack", d.v === "right" ? 1 : -1, pickApplicant, nextApplicant),
-  undo: () => { const p = S.pending; if (!p) return; clearInterval(p.timer); S.offers.unshift(p.o); S.pending = null; renderSnack(); render(); toast("Отменили — без штрафа"); },
+  undo: () => { const p = S.pending; if (!p) return; clearInterval(p.timer); S[p.from].unshift(p.o); S.pending = null; renderSnack(); render(); toast("Отменили — без штрафа"); },
   toast: d => toast(d.v),
   step: d => { const m = S.mine.find(x => x.id === +d.v); m.step += 1; render(); toast(m.step === 1 ? "Подтвердил — заведение увидело" : "Заведение знает, что ты едешь"); },
   scan: () => { S.scan = true; renderLayer(); },
@@ -735,7 +888,56 @@ const A = {
     S.vshifts.unshift({ id: Date.now(), role: f.role, date: f.day.replace("📅 ", ""), time: `${f.start}–${String((parseInt(f.start, 10) + f.hours) % 24).padStart(2, "0")}:00`, hours: f.hours, sum: f.sum, status: "Ищем · предложили 10 лучшим", who: `Подходят ${matchCount(f)}, остальным — через час`, step: 0 });
     S.vtab = "shifts"; render(); screen.scrollTop = 0; toast("Опубликовали. Первые 10 уже получили предложение");
   },
-  onboard: () => { S.onb = { step: 0, a: { photo: false, roles: ["повар"], exp: ["1–3 года"], skills: ["горячий цех", "гриль"], areas: ["Центр"], when: ["вечер", "беру срочные"] } }; S.sheet = null; S.role = "free"; render(); },
+  onboard: d => {
+    const kind = d.v || S.role; S.sheet = null; S.chat = false; S.role = kind;
+    S.onb = kind === "venue" ? { kind, step: 0, post: "Управляющий", v: { area: "Ленинградский", type: "Ресторан", roles: ["повар", "мойщик"], accept: false } }
+      : { kind, step: 0, a: { photo: false, roles: ["повар"], exp: ["1–3 года"], skills: ["горячий цех", "гриль"], areas: ["Центр"], when: ["вечер", "беру срочные"] } };
+    render(); screen.scrollTop = 0;
+  },
+  detail: d => { S.sheet = { type: "detail", id: +d.v }; renderLayer(); },
+  dtake: d => { const o = findShift(d.v); if (o) takeShift(o); },
+  dskip: d => { const o = findShift(d.v); if (o && S.offers.includes(o)) S.offers = S.offers.filter(x => x !== o); S.sheet = null; render(); toast("Ок, пришлём похожие"); },
+  chat: () => { S.chat = true; S.onb = null; S.sheet = null; S.pushDone = {}; S.pushOffer = S.offers[0] || null; render(); },
+  chatclose: () => { S.chat = false; render(); },
+  push: d => {
+    const k = d.k, v = d.v;
+    const text = {
+      offer: { take: "Беру — смена твоя. Адрес, телефон и меню — в «Мои»", skip: "Не могу — пришлю похожие" },
+      confirm: { ok: "Подтвердил — заведение увидело", no: "Не смогу — место ушло другому, штраф" },
+      go: { go: "Еду — заведение знает" },
+      app: { yes: "Добро — Аня назначена", next: "Покажу следующий отклик в приложении" },
+      noshow: { here: "Отмечен вручную, без штрафа", no: "Неявка — ищем замену срочно" },
+      fire: { "10": "Подожгли на 10% — разослали всем подходящим", "30": "Подожгли на 30% — разослали всем подходящим", "50": "Подожгли на 50% — разослали всем подходящим" }
+    };
+    if (v === "open") { S.chat = false; render(); if (S.pushOffer && findShift(S.pushOffer.id)) { S.sheet = { type: "detail", id: S.pushOffer.id }; renderLayer(); } return; }
+    if (v === "apps") { S.chat = false; S.vtab = "apps"; render(); return; }
+    if (v === "rate") {
+      S.chat = false;
+      if (k === "vrate") { S.vtab = "shifts"; render(); A.vrate({ v: "205" }); }
+      else { S.tab = "mine"; render(); toast("Оценка открывается после смены во вкладке «Мои»"); }
+      return;
+    }
+    if (k === "offer" && S.pushOffer) { const o = findShift(S.pushOffer.id); if (o) { S.offers = S.offers.filter(x => x !== o); if (v === "take") S.mine.unshift(mineFrom(o)); } }
+    if (k === "app" && v === "yes" && S.applicants.length) pickApplicant();
+    if (k === "noshow") (v === "here" ? applyHere : applyNoShow)(201);
+    if (k === "fire") applyFire(203, +v);
+    S.pushDone[k] = (text[k] || {})[v] || "Готово";
+    render();
+  },
+  here: d => { applyHere(+d.v); S.sheet = null; render(); toast("Отметили. Без штрафа"); },
+  noshow: d => { S.sheet = { type: "noshow", id: +d.v }; renderLayer(); },
+  noshowok: () => { applyNoShow(S.sheet.id); S.sheet = null; render(); toast("Ищем замену срочно. Сергей может оспорить"); },
+  vrate: d => { S.sheet = { type: "vrate", id: +d.v, stars: 5, tags: ["пришёл вовремя"], again: true }; renderLayer(); },
+  vstar: d => { S.sheet.stars = +d.v; renderLayer(); },
+  vtag: d => { const t = S.sheet.tags; const i = t.indexOf(d.v); i < 0 ? t.push(d.v) : t.splice(i, 1); renderLayer(); },
+  vagain: () => { S.sheet.again = !S.sheet.again; renderLayer(); },
+  vrated: () => { const v = S.vshifts.find(x => x.id === S.sheet.id); v.status = `Закрыта · ваша оценка ${S.sheet.stars}`; v.step = 4; delete v.attn; S.sheet = null; render(); toast("Спасибо! Оценка ушла в рейтинг"); },
+  vonb: d => { S.onb.step = +d.v; if (d.r) S.onb.post = d.r; render(); screen.scrollTop = 0; },
+  vf: d => { const v = S.onb.v; if (d.g === "roles") { const i = v.roles.indexOf(d.v); i < 0 ? v.roles.push(d.v) : v.roles.splice(i, 1); } else v[d.g] = d.v; const top = screen.scrollTop; render(); screen.scrollTop = top; },
+  vaccept: () => { S.onb.v.accept = !S.onb.v.accept; const top = screen.scrollTop; render(); screen.scrollTop = top; },
+  vdone: () => { if (!S.onb.v.accept) { toast("Без согласия с правилами дальше нельзя"); return; } S.onb.step = 7; render(); screen.scrollTop = 0; },
+  vfirst: () => { S.onb = null; S.role = "venue"; S.vtab = "new"; render(); screen.scrollTop = 0; },
+  vinvite: () => { S.onb = null; S.role = "venue"; S.vtab = "team"; render(); S.sheet = { type: "invite" }; renderLayer(); },
   onb: d => { S.onb.step = +d.v; render(); },
   ank: d => { const arr = S.onb.a[d.g]; const i = arr.indexOf(d.v); if (d.g === "exp") { S.onb.a.exp = [d.v]; } else { i < 0 ? arr.push(d.v) : arr.splice(i, 1); } const top = screen.scrollTop; render(); screen.scrollTop = top; },
   photo: () => { S.onb.a.photo = true; const top = screen.scrollTop; render(); screen.scrollTop = top; },
