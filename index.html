@@ -107,7 +107,7 @@ h1, h2, h3 { margin: 0; }
 .card.under2 { transform: translateY(24px) scale(.9); }
 .card.dragging { transition: none; cursor: grabbing; }
 .card.hotcard { box-shadow: 0 0 0 2px var(--accent), var(--shadow); }
-.photo { height: 168px; flex: none; position: relative; display: flex; align-items: flex-end; padding: 14px; color: #fff; overflow: hidden; }
+.photo { height: var(--ph, 196px); box-sizing: border-box; flex: none; position: relative; display: flex; align-items: flex-end; padding: 14px; color: #fff; overflow: hidden; }
 .photo .letter { position: absolute; right: -10px; top: -30px; font-family: var(--f-display); font-weight: 700; font-size: 170px; line-height: 1; opacity: .18; }
 .photo .vn { font-weight: 700; font-size: 18px; position: relative; display: flex; gap: 8px; align-items: center; }
 .photo .badge { position: absolute; left: 12px; top: 12px; }
@@ -151,7 +151,7 @@ h1, h2, h3 { margin: 0; }
 .snack b { display: block; font-size: 15px; }
 .snack button { color: var(--accent); font-weight: 700; padding: 8px; white-space: nowrap; }
 .snack .mascot { width: 40px; height: 40px; }
-.toast { pointer-events: none; position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 31; background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 12px; font-size: 14px; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.toast { pointer-events: none; position: absolute; left: 50%; bottom: 156px; transform: translateX(-50%); z-index: 31; background: var(--ink); color: var(--bg); padding: 10px 14px; border-radius: 12px; font-size: 14px; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
 
 /* Сканер */
 .scan { position: absolute; inset: 0; z-index: 25; background: #0B0A0C; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px; text-align: center; }
@@ -249,6 +249,10 @@ h1, h2, h3 { margin: 0; }
   .phone { width: 100%; height: auto; flex: 1; min-height: 0; border-radius: 0; box-shadow: none; position: relative; top: auto; }
   .tg { padding-top: 0; height: 44px; }
 }
+/* В Telegram шапка своя: нашу (она изображает Telegram на ноутбуке) меняем на тонкую полосу «Демо» под пультом */
+.in-tg .tg { height: 30px; padding: 0 12px; position: relative; justify-content: center; background: var(--desk); border-bottom: 0; font-size: 12px; color: var(--ink-2); }
+.in-tg .tg .ttl { font-weight: 500; }
+.in-tg .tg .close { position: absolute; left: 12px; top: 0; bottom: 0; color: var(--accent); font-weight: 600; font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 
@@ -256,7 +260,7 @@ h1, h2, h3 { margin: 0; }
   <aside class="panel" aria-label="Пульт прототипа">
     <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 14c0-4 3-7 7-7h6v6h-6v20H6z" fill="var(--accent)"/><path d="M22 7h5c4 0 7 3 7 7v19h-7V13h-5z" fill="var(--accent)"/></svg>Подхват</div>
     <p>Подхват — биржа подмен для кафе, ресторанов, пекарен и кофеен: заведение выкладывает смену, фрилансер жмёт «Беру». Тестовая версия, все заведения и люди — пример.</p>
-    <p><b>Версия 0.9</b> · 16.10 — свайп карточек на телефоне не срывается в прокрутку, окно Telegram не ездит вверх-вниз.</p>
+    <p><b>Версия 1.0</b> · 17.10 — даты от сегодняшнего дня; в Telegram — его тема и без второй шапки; карточка смены целиком на экране.</p>
     <div class="field"><span class="label">Кто смотрит</span>
       <div class="seg" role="group" aria-label="Роль"><button data-a="role" data-v="free">Фрилансер</button><button data-a="role" data-v="venue">Заведение</button></div>
     </div>
@@ -277,7 +281,7 @@ h1, h2, h3 { margin: 0; }
   </div>
 
   <div class="phone" id="phone">
-    <div class="tg"><button class="close" data-a="chatclose">Закрыть</button><span class="ttl" id="tgTitle">Подхват<small>тестовая версия 0.9</small></span><span class="more" aria-hidden="true">···</span></div>
+    <div class="tg" id="tgBar"></div>
     <main class="screen" id="screen"></main>
     <nav class="tabs" id="tabs" aria-label="Разделы"></nav>
     <div id="layer"></div>
@@ -289,7 +293,15 @@ h1, h2, h3 { margin: 0; }
 <script>
 const MASCOT = "data:image/jpeg;base64,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";
 const HUES = { "Шкипер": ["#0F6E7A", "#1B9AAA"], "Сова": ["#5B3B8C", "#8E5CC4"], "Рыбный двор": ["#1D5FA8", "#3A8DDE"], "Дюны": ["#B5651D", "#E09A4A"], "Брусчатка": ["#7A2E3A", "#B4475A"], "Маяк": ["#2D6B3F", "#4FA466"], "Кофейня на Мира": ["#6B4A2E", "#A3764C"], "Колосок": ["#9A6B1F", "#D9A441"], "Зерно": ["#3E2A1E", "#7A5238"], "Бисквит": ["#B0476B", "#E07A9B"] };
-const VERSION = "0.9";
+const VERSION = "1.0";
+// Даты — от сегодняшнего дня: демо открывают в любой день, «Сегодня» и календарь не устаревают
+const WD = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+const MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+const dayAt = n => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + n); return d; };
+const dshort = n => `${dayAt(n).getDate()} ${MON[dayAt(n).getMonth()]}`; // «19 окт»
+const dwd = n => `${WD[dayAt(n).getDay()]} ${dshort(n)}`; // «Пн 19 окт»
+const dkey = n => n === 0 ? "Сегодня" : n === 1 ? "Завтра" : n === -1 ? "Вчера" : `${WD[dayAt(n).getDay()]}, ${dshort(n)}`; // «Пн, 19 окт»
+const shortDate = k => k === "Сегодня" ? dshort(0) : k === "Завтра" ? dshort(1) : k === "Вчера" ? dshort(-1) : k.replace(/^[А-Яа-я]+, /, "");
 const CATS = [
   { id: "kitchen", name: "Кухня", roles: ["Повар", "Мойщик"] },
   { id: "bakery", name: "Пекарня", roles: ["Пекарь", "Кондитер"] },
@@ -301,18 +313,24 @@ const POINTS = [
   { id: "kolosok", name: "Колосок на Московском", type: "Пекарня", addr: "Московский проспект, 120", venue: "Колосок", role: "Пекарь" }
 ];
 const curPoint = () => POINTS.find(p => p.id === S.point);
+// Открыто в Telegram: адрес мини-приложения Telegram дополняет параметрами #tgWebApp…
+const TG_PARAMS = new URLSearchParams(location.hash.slice(1));
+const IN_TG = TG_PARAMS.has("tgWebAppPlatform") || TG_PARAMS.has("tgWebAppData") || !!window.TelegramWebviewProxy;
+if (IN_TG) document.documentElement.classList.add("in-tg");
+function tgBar(sub) {
+  const bar = document.getElementById("tgBar");
+  if (IN_TG) {
+    const back = S.chat || S.onb;
+    bar.innerHTML = back ? `<button class="close" data-a="chatclose">‹ Назад</button><span class="ttl">${S.chat ? "Бот" : "Регистрация"} · демо</span>`
+      : `<span class="ttl">Демо · люди и заведения выдуманы</span>`;
+    return;
+  }
+  bar.innerHTML = `<button class="close" data-a="chatclose">Закрыть</button><span class="ttl">Подхват<small>${sub || "тестовая версия " + VERSION}</small></span><span class="more" aria-hidden="true">···</span>`;
+}
 const atPoint = x => (x.point || "sova") === S.point;
 const pointApps = () => S.applicants.filter(atPoint);
 const shiftLabel = id => { const v = S.vshifts.find(x => x.id === id); return v ? `${v.role} · ${v.date}` : ""; };
-const WEEK = [
-  { key: "Сегодня", d: "Чт", n: 15 },
-  { key: "Завтра", d: "Пт", n: 16 },
-  { key: "Сб, 17 окт", d: "Сб", n: 17 },
-  { key: "Вс, 18 окт", d: "Вс", n: 18 },
-  { key: "Пн, 19 окт", d: "Пн", n: 19 },
-  { key: "Вт, 20 окт", d: "Вт", n: 20 },
-  { key: "Ср, 21 окт", d: "Ср", n: 21 }
-];
+const WEEK = [0, 1, 2, 3, 4, 5, 6].map(n => ({ key: dkey(n), d: WD[dayAt(n).getDay()], n: dayAt(n).getDate() }));
 const VMETA = {
   "Шкипер": { type: "Ресторан", rating: 4.8, count: 31, rules: ["Форма своя: чёрная футболка, закрытая обувь", "Перекус в 21:00 за счёт заведения", "Вход на кухню со двора, звонок у двери"], rates: [["Повар", "3 500 ₽ за 8 ч"], ["Мойщик", "2 200 ₽ за 8 ч"]], reviews: [{ who: "Сергей К.", stars: 5, tags: ["вовремя заплатили", "кормили"], date: "10 окт", reply: "Спасибо, ждём снова!" }, { who: "Алина В.", stars: 4, tags: ["дружная кухня"], date: "4 окт" }, { who: "Тимур Р.", stars: 5, tags: ["всё как в описании"], date: "28 сен" }] },
   "Сова": { type: "Ресторан", rating: 4.9, count: 38, rules: ["Медкнижка обязательна — проверим на входе", "Форму выдаём", "Обед в 14:00"], rates: [["Повар", "3 500 ₽ за 8 ч"], ["Мойщик", "2 200 ₽ за 8 ч"]], reviews: [{ who: "Сергей К.", stars: 5, tags: ["кормили"], date: "13 окт", reply: "Спасибо, Сергей! Ждём снова" }, { who: "Ника Д.", stars: 4, tags: ["был бардак"], date: "9 окт" }, { who: "Тимур Р.", stars: 5, tags: ["всё как в описании", "вовремя заплатили"], date: "7 окт" }] },
@@ -357,9 +375,9 @@ function freshState() {
       { id: 7, venue: "Колосок", role: "Пекарь", skills: "формовка · подовая печь", date: "Сегодня", time: "23:00–07:00", hours: 8, base: 3200, rating: 4.9, area: "Московский", dist: "3,1 км", reqs: ["медкнижка", "головной убор"], gives: ["хлеб с собой", "такси после 23:00"], x: 74, y: 66 },
       { id: 2, venue: "Сова", role: "Повар", skills: "горячий цех", date: "Завтра", time: "08:00–16:00", hours: 8, base: 3500, rating: 4.9, area: "Ленинградский", dist: "3,4 км", reqs: ["медкнижка"], gives: ["кормим", "форма наша"], x: 36, y: 20 },
       { id: 8, venue: "Зерно", role: "Бариста", skills: "эспрессо и молочные", date: "Завтра", time: "08:00–16:00", hours: 8, base: 2800, rating: 4.8, area: "Центр", dist: "0,8 км", reqs: ["медкнижка"], gives: ["кофе бесплатно", "форма наша"], x: 40, y: 40 },
-      { id: 3, venue: "Рыбный двор", role: "Повар", skills: "гриль", date: "Сб, 17 окт", time: "12:00–16:00", hours: 4, base: 1900, rating: 4.6, area: "Московский", dist: "4,8 км", reqs: ["своя форма"], gives: [], x: 62, y: 78 },
-      { id: 9, venue: "Бисквит", role: "Пекарь", skills: "формовка", date: "Сб, 17 окт", time: "06:00–14:00", hours: 8, base: 3400, rating: 4.7, area: "Ленинградский", dist: "2,6 км", reqs: ["медкнижка", "головной убор"], gives: ["кормим"], x: 22, y: 30 },
-      { id: 4, venue: "Дюны", role: "Повар", skills: "горячий цех · банкет", date: "Вс, 18 окт", time: "12:00–20:00", hours: 8, base: 3600, rating: 4.7, area: "Центр", dist: "2,0 км", reqs: ["медкнижка"], gives: ["кормим"], x: 58, y: 34 }
+      { id: 3, venue: "Рыбный двор", role: "Повар", skills: "гриль", date: dkey(2), time: "12:00–16:00", hours: 4, base: 1900, rating: 4.6, area: "Московский", dist: "4,8 км", reqs: ["своя форма"], gives: [], x: 62, y: 78 },
+      { id: 9, venue: "Бисквит", role: "Пекарь", skills: "формовка", date: dkey(2), time: "06:00–14:00", hours: 8, base: 3400, rating: 4.7, area: "Ленинградский", dist: "2,6 км", reqs: ["медкнижка", "головной убор"], gives: ["кормим"], x: 22, y: 30 },
+      { id: 4, venue: "Дюны", role: "Повар", skills: "горячий цех · банкет", date: dkey(3), time: "12:00–20:00", hours: 8, base: 3600, rating: 4.7, area: "Центр", dist: "2,0 км", reqs: ["медкнижка"], gives: ["кормим"], x: 58, y: 34 }
     ],
     today: [
       { id: 5, venue: "Маяк", role: "Повар", skills: "горячий цех", date: "Сегодня", time: "16:00–22:00", hours: 6, base: 2900, rating: 4.7, area: "Ленинградский", dist: "2,9 км", reqs: ["медкнижка"], gives: ["кормим"], x: 28, y: 52 },
@@ -367,7 +385,7 @@ function freshState() {
       { id: 11, venue: "Зерно", role: "Бариста", skills: "эспрессо и молочные", date: "Сегодня", time: "15:00–21:00", hours: 6, base: 2100, rating: 4.8, area: "Центр", dist: "0,8 км", reqs: ["медкнижка"], gives: ["кофе бесплатно"], x: 46, y: 28 }
     ],
     mine: [
-      { id: 101, venue: "Брусчатка", role: "Повар", date: "Пт, 16 окт", time: "17:00–23:00", hours: 6, sum: 2700, step: 0, address: "ул. Багратиона, 101", manager: "Марина, управляющий", phone: "+7 911 000-12-34" }
+      { id: 101, venue: "Брусчатка", role: "Повар", date: "Завтра", time: "17:00–23:00", hours: 6, sum: 2700, step: 0, address: "ул. Багратиона, 101", manager: "Марина, управляющий", phone: "+7 911 000-12-34" }
     ],
     history: [
       { venue: "Сова", date: "13 окт", sum: 3500 }, { venue: "Маяк", date: "11 окт", sum: 2900 }, { venue: "Шкипер", date: "10 окт", sum: 4200 }, { venue: "Колосок", date: "8 окт", sum: 3200 },
@@ -375,13 +393,13 @@ function freshState() {
     ],
     vshifts: [
       { id: 201, role: "Повар", date: "Сегодня", time: "14:00–22:00", hours: 8, sum: 3500, status: "Отметки по QR нет", who: "Дима Л. · смена идёт 30 минут", full: "Дима Л. · ★ 4,6", step: 2, attn: "noshow", name: "Дима" },
-      { id: 202, role: "Повар", date: "Сб, 17 окт", time: "12:00–20:00", hours: 8, sum: 3600, status: "2 отклика новичков", who: "решите до 15:30 — иначе назначим самого сильного", step: -1, attn: "apps" },
-      { id: 203, role: "Мойщик", date: "Вс, 18 окт", time: "09:00–17:00", hours: 8, sum: 2200, status: "Ищем", who: "разослали всем 24 подходящим, за 3 часа никто не взял", step: -1, attn: "fire" },
+      { id: 202, role: "Повар", date: dkey(2), time: "12:00–20:00", hours: 8, sum: 3600, status: "2 отклика новичков", who: "решите до 15:30 — иначе назначим самого сильного", step: -1, attn: "apps" },
+      { id: 203, role: "Мойщик", date: dkey(3), time: "09:00–17:00", hours: 8, sum: 2200, status: "Ищем", who: "разослали всем 24 подходящим, за 3 часа никто не взял", step: -1, attn: "fire" },
       { id: 205, role: "Повар", date: "Вчера", time: "10:00–18:00", hours: 8, sum: 3500, status: "Закончилась", who: "Тимур Р. · пришёл по QR в 09:54", step: 4, attn: "rate", name: "Тимур" },
-      { id: 204, role: "Повар", date: "Пн, 19 окт", time: "10:00–18:00", hours: 8, sum: 3500, status: "Подтвердил", who: "Тимур Р. · ★ 4,7", step: 1 },
+      { id: 204, role: "Повар", date: dkey(4), time: "10:00–18:00", hours: 8, sum: 3500, status: "Подтвердил", who: "Тимур Р. · ★ 4,7", step: 1 },
       { id: 301, point: "kolosok", role: "Пекарь", date: "Сегодня", time: "23:00–07:00", hours: 8, sum: 3200, status: "Ищем", who: "предложили всем 9 подходящим", step: -1 },
       { id: 302, point: "kolosok", role: "Продавец", date: "Завтра", time: "07:00–15:00", hours: 8, sum: 2300, status: "Подтвердила", who: "Лиза М. · ★ 4,8", step: 1 },
-      { id: 303, point: "kolosok", role: "Кондитер", date: "Сб, 17 окт", time: "09:00–17:00", hours: 8, sum: 3400, status: "Отклик новичка", who: "Даша, 18 — решите до 15:30", step: -1, attn: "apps" }
+      { id: 303, point: "kolosok", role: "Кондитер", date: dkey(2), time: "09:00–17:00", hours: 8, sum: 3400, status: "Отклик новичка", who: "Даша, 18 — решите до 15:30", step: -1, attn: "apps" }
     ],
     applicants: [
       { name: "Аня", g: "f", age: 19, color: ["#C2410C", "#F97316"], role: "Повар", exp: "до года", skills: ["заготовка", "холодный цех"], worked: "столовая при колледже", shift: 202 },
@@ -402,14 +420,14 @@ function triesList() {
     "Тапни карточку — подробности смены; «О заведении» — правила, отзывы, ставки.",
     "Свайпни карточку: вправо — «Беру», влево — «Не могу». Или кнопки.",
     "«Сегодня» — все смены дня, «Неделя» — календарь ставок.",
-    "«Мои» → смена в пятницу: «Подтверждаю», «Еду», «Я на месте» и скан QR; «Не смогу выйти» — отказ.",
+    "«Мои» → завтрашняя смена: «Подтверждаю», «Еду», «Я на месте» и скан QR; «Не смогу выйти» — отказ.",
     "«Карта» — тап по ценнику открывает смену.",
     "«Уведомления в боте» — как смены приходят пушем.",
-    "«Профиль» → «Режимы прототипа»: новичок, неявка, пауза и «Оспорить»."
+    "«Профиль» → «Режимы демо»: новичок, неявка, пауза и «Оспорить»."
   ] : [
     "Сверху: Дима не отметился по QR — «Не пришёл» запускает замену.",
     "Отклики — новички стопкой: «Добро» / «Следующий».",
-    "Мойщик на воскресенье → «🔥 Поджечь».",
+    "Мойщика никто не взял → «🔥 Поджечь».",
     "Вчерашняя смена Тимура → «Оценить»: «Хотим снова» или «Больше не звать».",
     "«+» — новая смена одной формой; следите за счётчиком подходящих.",
     "Вкладка «Заведение» внизу — рейтинг, статистика за месяц, ответы на отзывы.",
@@ -423,12 +441,13 @@ function render() {
 
   if (S.chat) { renderChat(); return; }
   if (S.onb) { renderOnboarding(); return; }
-  document.getElementById("tgTitle").innerHTML = `Подхват<small>тестовая версия ${VERSION}</small>`;
+  tgBar();
   document.getElementById("tabs").hidden = false;
   screen.innerHTML = S.role === "free" ? freeView() : venueView();
   document.getElementById("tabs").innerHTML = S.role === "free" ? freeTabs() : venueTabs();
   renderLayer();
   mountStacks();
+  fitStacks();
 }
 function tabBtn(id, label, cur, act) {
   return `<button class="tab" data-a="${act}" data-v="${id}" ${cur === id ? 'aria-current="page"' : ""}>${ICON[id === "apps" ? "apps" : id] || ""}<span>${label}</span></button>`;
@@ -501,17 +520,17 @@ function weekView() {
     <div class="list">${items.length ? items.map(({ o, id }) => `<button class="item" data-a="detail" data-v="${id}"><span class="thumb" style="background:${grad(o.venue)}">${o.venue[0]}</span><span class="grow"><span class="title">${o.role} · ${esc(o.venue)}</span><br><span class="muted small">${o.time} · ${o.hours} ч</span></span><span class="money num">${o.hot ? "🔥 " : ""}${rub(offerSum(o))}</span></button>`).join("") : `<div class="muted">В этот день смен под твои роли пока нет.</div>`}</div>`;
 }
 function penaltyBanner() {
-  if (S.penalty === "disputed") return `<div class="banner wait"><div class="h2">Спор у модератора</div><div class="small">Неявка в «Маяке», 14 окт. Модератор смотрит отметку QR и геопозицию — ответит до завтра, 21:00.</div></div>`;
-  return `<div class="banner"><div class="h2">Пауза до Ср, 21 окт</div><div class="small">Неявка в «Маяке», Ср 14 окт — это 2 штрафа и пауза 7 дней. Пока пауза, смены не приходят.</div><div class="muted small">Решат спор в твою пользу — пауза закончится раньше.</div><button class="btn main" data-a="dispute">Оспорить</button></div>`;
+  if (S.penalty === "disputed") return `<div class="banner wait"><div class="h2">Спор у модератора</div><div class="small">Неявка в «Маяке», ${dshort(-3)}. Модератор смотрит отметку QR и геопозицию — ответит до завтра, 21:00.</div></div>`;
+  return `<div class="banner"><div class="h2">Пауза до ${dkey(4)}</div><div class="small">Неявка в «Маяке», ${dwd(-3)} — это 2 штрафа и пауза 7 дней. Пока пауза, смены не приходят.</div><div class="muted small">Решат спор в твою пользу — пауза закончится раньше.</div><button class="btn main" data-a="dispute">Оспорить</button></div>`;
 }
 function penaltyItem() {
-  return `<div class="item"><span class="thumb" style="background:${grad("Маяк")}">М</span><span class="grow"><span class="title">Маяк</span><br><span class="small" style="color:var(--bad)">14 окт · неявка — 2 штрафа</span></span>${S.penalty === "paused" ? `<button class="chip" data-a="dispute">Оспорить</button>` : `<span class="tag">спор</span>`}</div>`;
+  return `<div class="item"><span class="thumb" style="background:${grad("Маяк")}">М</span><span class="grow"><span class="title">Маяк</span><br><span class="small" style="color:var(--bad)">${dshort(-3)} · неявка — 2 штрафа</span></span>${S.penalty === "paused" ? `<button class="chip" data-a="dispute">Оспорить</button>` : `<span class="tag">спор</span>`}</div>`;
 }
 function waitingBlocks() {
   return S.waiting.map(w => `<section class="banner wait"><div class="row"><span class="thumb" style="background:${grad(w.o.venue)}">${w.o.venue[0]}</span><div class="grow"><div class="h2">${w.o.role} · ${esc(w.o.venue)}</div><div class="muted small">${w.o.date}, ${w.o.time}</div></div><div class="money num">${rub(offerSum(w.o))}</div></div>
     <div class="small"><b>Заведение ответит до ${w.urgent ? "14:45" : "15:30"}.</b> Не успеет — место получит самый сильный отклик.</div>
     <div class="bar"><i style="width:35%"></i></div>
-    <div class="label">Прототип: что ответит заведение</div>
+    <div class="label">Демо: что ответит заведение</div>
     <div class="actions"><button class="btn ghost" data-a="wno" data-v="${w.o.id}">Отказ</button><button class="btn main" data-a="wyes" data-v="${w.o.id}">Добро</button></div></section>`).join("");
 }
 function ratingSummary(name) {
@@ -554,18 +573,18 @@ function stepsBar(step, labels = true) {
 }
 function mineAction(m) {
   const cancel = m.ask
-    ? `<div class="box sec" style="box-shadow:none;border:1px solid var(--line)"><span class="small">${cancelText(m)}</span><div class="actions"><button class="btn ghost" style="padding:10px 12px;font-size:15px" data-a="mkeep" data-v="${m.id}">Оставить</button><button class="btn main" style="padding:10px 12px;font-size:15px" data-a="mcancel" data-v="${m.id}">Отменить смену</button></div></div>`
+    ? `<div class="box sec" style="box-shadow:none;border:1px solid var(--line)"><span class="small">${cancelText(m)}</span><div class="actions"><button class="btn ghost" style="padding:10px 12px;font-size:15px" data-a="mkeep" data-v="${m.id}">Оставить</button><button class="btn main" style="padding:10px 12px;font-size:15px" data-a="mcancel" data-v="${m.id}">Отменить</button></div></div>`
     : `<button class="muted small" style="padding:0;align-self:flex-start" data-a="mask" data-v="${m.id}">Не смогу выйти</button>`;
   switch (m.step) {
     case 0: return `<button class="btn main" data-a="step" data-v="${m.id}">Подтверждаю</button><div class="muted small">Напомним за 12 часов до смены — подтверди в течение 2 часов, иначе место уйдёт другому и будет штраф.</div>${cancel}`;
     case 1: return `<button class="btn main" data-a="step" data-v="${m.id}">Еду</button><div class="muted small">Нажми, когда выйдешь из дома, — заведение будет спокойно.</div>${cancel}`;
     case 2: return `<button class="btn main" data-a="scan" data-v="${m.id}">Я на месте · сканировать QR</button><button class="btn ghost" data-a="geo" data-v="${m.id}">Нет QR — по геопозиции</button>`;
-    case 3: return `<div class="box row"><span class="tag good">На месте с 16:52</span><span class="muted small">Смена идёт, до ${m.time.split("–")[1]}</span></div><button class="btn ghost" data-a="finish" data-v="${m.id}">Смена закончилась (прототип)</button>`;
+    case 3: return `<div class="box row"><span class="tag good">На месте с 16:52</span><span class="muted small">Смена идёт, до ${m.time.split("–")[1]}</span></div><button class="btn ghost" data-a="finish" data-v="${m.id}">Смена закончилась (демо)</button>`;
     default: return `<div class="box"><b>Смена закончилась.</b> <span class="muted">Оценку заведения увидишь после своей.</span></div>`;
   }
 }
 function hoursTo(m) {
-  const day = m.date === "Сегодня" ? 0 : m.date === "Завтра" || m.date === "Пт, 16 окт" ? 1 : 2;
+  const day = m.date === "Сегодня" ? 0 : m.date === "Завтра" ? 1 : 2;
   return day * 24 + parseInt(m.time, 10) - 14.5;
 }
 function cancelText(m) {
@@ -581,7 +600,7 @@ function mineView() {
       ${stepsBar(Math.min(m.step, 4))}
       ${mineAction(m)}
       <div class="small"><b>${m.address}</b><br><span class="muted">${m.manager} · </span><span class="num">${m.phone}</span></div>
-      <div class="chips"><button class="chip" data-a="toast" data-v="В прототипе файлы не открываются">📄 Меню.pdf</button><button class="chip" data-a="toast" data-v="В прототипе файлы не открываются">📄 Памятка новичку</button><button class="chip" data-a="toast" data-v="В прототипе файлы не открываются">🗺 Схема входа</button></div>
+      <div class="chips"><button class="chip" data-a="toast" data-v="В демо файлы не открываются">📄 Меню.pdf</button><button class="chip" data-a="toast" data-v="В демо файлы не открываются">📄 Памятка новичку</button><button class="chip" data-a="toast" data-v="В демо файлы не открываются">🗺 Схема входа</button></div>
     </section>`).join("");
   const earned = S.earned, shifts = S.earnedShifts, hist = S.history;
   return `<div class="pad"><div class="h1">Мои смены</div>${waitingBlocks()}${blocks || (S.waiting.length ? "" : `<div class="empty"><div class="mascot" style="background-image:url(${MASCOT})"></div><div class="muted">Пока пусто. Свайпни что-нибудь вправо во вкладке «Смены».</div></div>`)}
@@ -600,7 +619,7 @@ function mapView() {
     </svg>
     ${paused ? "" : pins.map(p => `<button class="pin ${p.hot ? "hot" : ""} num" style="left:${p.x}%;top:${p.y}%" data-a="detail" data-v="${p.id}" aria-label="${esc(p.venue)}">${p.hot ? "🔥 " : ""}${rub(p.sum)}</button>`).join("")}
     <span class="me-dot" style="left:45%;top:67%" title="Ты здесь"></span>
-    <div class="box" style="position:absolute;left:12px;right:12px;top:12px">${paused ? `<b>Пауза до Ср, 21 окт</b><br><span class="muted small">Пока пауза, смены не приходят</span>` : `<b>${pins.length} ${plural(pins.length, ["смена", "смены", "смен"])} рядом</b>${pins.some(p => p.hot) ? '<br><span class="muted small">Оранжевые — горят, ставка выше</span>' : ""}`}</div>
+    <div class="box" style="position:absolute;left:12px;right:12px;top:12px">${paused ? `<b>Пауза до ${dkey(4)}</b><br><span class="muted small">Пока пауза, смены не приходят</span>` : `<b>${pins.length} ${plural(pins.length, ["смена", "смены", "смен"])} рядом</b>${pins.some(p => p.hot) ? '<br><span class="muted small">Оранжевые — горят, ставка выше</span>' : ""}`}</div>
   </div>`;
 }
 function profileView() {
@@ -612,11 +631,11 @@ function profileView() {
       ${S.newbie ? `<div class="chips"><span class="tag">Новичок</span><span class="tag">Медкнижка проверена</span></div><div class="muted small">Закрой первую смену без неявки с оценкой от 4 — и смена будет твоей сразу после «Беру».</div>` : `<div class="chips"><span class="tag good">✓ Проверен</span>${S.penalty ? "" : '<span class="tag good">10 смен без неявок</span>'}<span class="tag good">Всегда вовремя</span><span class="tag">Медкнижка проверена</span></div>
       <div class="muted small">Значки видит заведение в твоей карточке. Неявка обнуляет «без неявок».</div>`}</section>
     <section class="box" style="display:flex;flex-direction:column;gap:10px"><div class="h2">Что умею</div>
-      <div class="chips"><span class="chip" aria-pressed="true">горячий цех</span><span class="chip" aria-pressed="true">гриль</span><span class="chip" aria-pressed="true">формовка</span><span class="chip" aria-pressed="true">подовая печь</span><span class="chip" aria-pressed="true">эспрессо и молочные</span><span class="chip">+ добавить</span></div>
+      <div class="chips"><span class="chip" aria-pressed="true">горячий цех</span><span class="chip" aria-pressed="true">гриль</span><span class="chip" aria-pressed="true">формовка</span><span class="chip" aria-pressed="true">подовая печь</span><span class="chip" aria-pressed="true">эспрессо и молочные</span><button class="chip" data-a="toast" data-v="В демо анкета не меняется">+ добавить</button></div>
       <div class="row between small"><span class="muted">Ставка от</span><b class="num">350 ₽/ч</b></div>
-      <div class="row between small"><span class="muted">Районы</span><b>Центр, Ленинградский, Московский</b></div>
-      <div class="row between small"><span class="muted">Когда готов</span><b>утро, вечер, ночь, выходные, срочные</b></div></section>
-    <section class="box" style="display:flex;flex-direction:column;gap:10px;border:1px dashed var(--line);box-shadow:none"><div class="label">Режимы прототипа</div>
+      <div class="row between small"><span class="muted" style="flex:none">Районы</span><b style="text-align:right">Центр, Ленинградский, Московский</b></div>
+      <div class="row between small"><span class="muted" style="flex:none">Когда готов</span><b style="text-align:right">утро, вечер, ночь, выходные, срочные</b></div></section>
+    <section class="box" style="display:flex;flex-direction:column;gap:10px;border:1px dashed var(--line);box-shadow:none"><div class="label">Режимы демо</div>
       <div class="seg" role="group" aria-label="Статус"><button data-a="newbie" data-v="0" aria-pressed="${!S.newbie}">Проверенный</button><button data-a="newbie" data-v="1" aria-pressed="${S.newbie}">Новичок</button></div>
       <button class="btn ghost" data-a="penalty">${S.penalty ? "Убрать неявку" : "Показать неявку и спор"}</button></section>
   </div>`;
@@ -676,7 +695,7 @@ function formView() {
     ${S.formMore ? `
     <div class="field"><span class="label">Что взять с собой</span><div class="chips">${["своя форма", "своя обувь", "головной убор", "свои ножи", "паспорт"].map(b => chip("bring", b, f.bring.includes(b))).join("")}</div></div>
     <div class="field"><span class="label">Что даём</span><div class="chips">${["кормим", "форма наша", "такси после 23:00"].map(g => chip("gives", g, f.gives.includes(g))).join("")}</div></div>
-    <div class="field"><span class="label">Материалы — придут фрилансеру после назначения</span><div class="chips"><span class="chip" aria-pressed="true">📄 Меню.pdf</span><span class="chip" aria-pressed="true">📄 Памятка новичку</span><button class="chip" data-a="toast" data-v="В прототипе файлы не загружаются">+ файл</button></div></div>` : `<button class="box row between" style="width:100%;text-align:left" data-a="formmore"><span><span class="label">Условия и материалы</span><br><span class="small">как в прошлый раз: ${[...f.bring, ...f.gives].join(" · ")} · 2 файла</span></span><span class="muted">▾</span></button>`}
+    <div class="field"><span class="label">Материалы — придут фрилансеру после назначения</span><div class="chips"><span class="chip" aria-pressed="true">📄 Меню.pdf</span><span class="chip" aria-pressed="true">📄 Памятка новичку</span><button class="chip" data-a="toast" data-v="В демо файлы не загружаются">+ файл</button></div></div>` : `<button class="box row between" style="width:100%;text-align:left" data-a="formmore"><span><span class="label">Условия и материалы</span><br><span class="small">как в прошлый раз: ${[...f.bring, ...f.gives].join(" · ")} · 2 файла</span></span><span class="muted">▾</span></button>`}
     ${hint}
   </div>
   <div class="mainbar"><button class="btn main" data-a="publish">${fits(n)} · Опубликовать</button></div>`;
@@ -684,7 +703,7 @@ function formView() {
 function applicantCard(a, cls) {
   return `<article class="card ${cls}" data-name="${esc(a.name)}">
     <div class="stamp yes">ДОБРО</div><div class="stamp no">ДАЛЬШЕ</div>
-    <div class="photo" style="background:linear-gradient(135deg,${a.color[0]},${a.color[1]});height:140px;justify-content:center;align-items:center">
+    <div class="photo" style="background:linear-gradient(135deg,${a.color[0]},${a.color[1]});height:var(--ph, 168px);justify-content:center;align-items:center">
       <span style="font-family:var(--f-display);font-size:72px;font-weight:700;opacity:.9">${a.name[0]}</span><span class="badge tag" style="background:rgba(255,255,255,.22);color:#fff">Новичок</span></div>
     <div class="cbody"><div class="h1">${esc(a.name)}, ${a.age}</div>
       <div><b>${a.role}</b> · опыт ${a.exp}</div>
@@ -748,7 +767,7 @@ function detailBody(o) {
 /* ---------- Пуши бота ---------- */
 function renderChat() {
   document.getElementById("tabs").hidden = true;
-  document.getElementById("tgTitle").innerHTML = 'Подхват<small>бот</small>';
+  tgBar("бот");
   renderLayer();
   const D = S.pushDone;
   const btns = (key, list, cls) => D[key] ? `<div class="done">✓ ${D[key]}</div>` : `<div class="ibtns ${cls || ""}">${list.map(([v, label, wide]) => `<button class="${wide ? "wide" : ""}" data-a="push" data-k="${key}" data-v="${v}">${label}</button>`).join("")}</div>`;
@@ -760,14 +779,14 @@ function renderChat() {
       ${btns("offer", [["take", "Беру"], ["skip", "Не могу"], ["open", "Подробнее в приложении", true]])}` : "";
     const br = S.mine.some(x => x.id === 101) || D.confirm || D.go;
     msgs = `<div class="day">Сегодня</div>${offer}${br ? `
-      <div class="bub">В пятницу в 17:00 тебя ждут в «Брусчатке». Подтверди, что выйдешь.</div>${btns("confirm", [["ok", "Подтверждаю"], ["no", "Не смогу"]])}
-      <div class="day">Пт, 16 окт</div>
+      <div class="bub">Завтра в 17:00 тебя ждут в «Брусчатке». Подтверди, что выйдешь.</div>${btns("confirm", [["ok", "Подтверждаю"], ["no", "Не смогу"]])}
+      <div class="day">Завтра</div>
       <div class="bub">Через 2 часа смена в «Брусчатке», ул. Багратиона, 101. Нажми «Еду», когда выйдешь.</div>${btns("go", [["go", "Еду"]], "one")}` : ""}`;
   } else {
     msgs = `<div class="day">Сегодня</div>
-      <div class="bub">Сова · Аня, 19, откликнулась на «Повар · Сб, 17 окт». Опыт до года: заготовка, холодный цех. Ответьте до 15:30 — иначе назначим самого сильного.</div>${btns("app", [["yes", "Добро"], ["next", "Следующий"], ["apps", "Открыть отклики", true]])}
+      <div class="bub">Сова · Аня, 19, откликнулась на «Повар · ${dkey(2)}». Опыт до года: заготовка, холодный цех. Ответьте до 15:30 — иначе назначим самого сильного.</div>${btns("app", [["yes", "Добро"], ["next", "Следующий"], ["apps", "Открыть отклики", true]])}
       <div class="bub">Сова · Дима не отсканировал QR, смена идёт 30 минут. Он на месте?</div>${btns("noshow", [["here", "На месте"], ["no", "Не пришёл"]])}
-      <div class="bub">Сова · Мойщик на Вс, 18 окт, 2 200 ₽: за 3 часа никто не взял. Поджечь?</div>${btns("fire", [["10", "+10%"], ["30", "+30%"], ["50", "+50%"]], "three")}
+      <div class="bub">Сова · Мойщик на ${dkey(3)}, 2 200 ₽: за 3 часа никто не взял. Поджечь?</div>${btns("fire", [["10", "+10%"], ["30", "+30%"], ["50", "+50%"]], "three")}
       <div class="bub">Сова · Тимур закончил смену. Оцените его — он увидит оценку после своей.</div>${btns("vrate", [["rate", "Оценить в приложении"]], "one")}`;
   }
   screen.innerHTML = `<div style="display:flex;flex-direction:column;height:100%"><div class="chat">${msgs}</div><button class="menu-btn" data-a="chatclose">Открыть Подхват</button></div>`;
@@ -776,10 +795,10 @@ function renderChat() {
 /* ---------- Регистрация заведения ---------- */
 function renderVenueOnb() {
   const o = S.onb;
-  if (o.step >= 6) { document.getElementById("tgTitle").innerHTML = `Подхват<small>тестовая версия ${VERSION}</small>`; screen.innerHTML = o.step === 6 ? venueFormView() : venueDoneView(); return; }
-  document.getElementById("tgTitle").innerHTML = 'Подхват<small>бот</small>';
+  if (o.step >= 6) { tgBar(); screen.innerHTML = o.step === 6 ? venueFormView() : venueDoneView(); return; }
+  tgBar("бот");
   const m = [`<div class="bub">Привет! Это Подхват — закрываем смены в кафе, ресторанах, пекарнях, кондитерских и кофейнях Калининграда.<div class="muted small" style="margin-top:6px">Нажимая кнопку, вы соглашаетесь на обработку персональных данных · <u>политика</u></div></div>`];
-  let kbd = `<button data-a="toast" data-v="В прототипе показан путь заведения">Ищу смены</button><button data-a="vonb" data-v="1">Я из заведения</button>`;
+  let kbd = `<button data-a="toast" data-v="В демо показан путь заведения">Ищу смены</button><button data-a="vonb" data-v="1">Я из заведения</button>`;
   if (o.step >= 1) { m.push(`<div class="bub me">Я из заведения</div>`, `<div class="bub">Поделитесь контактом — так мы узнаем ваш номер.</div>`); kbd = `<button data-a="vonb" data-v="2">📱 Поделиться контактом</button>`; }
   if (o.step >= 2) { m.push(`<div class="bub me">📱 Контакт</div>`, `<div class="bub">Спасибо! Осталась карточка заведения — одним экраном в приложении, пара минут.<button class="inline" data-a="vonb" data-v="6">Заполнить карточку</button></div>`); kbd = ""; }
   screen.innerHTML = `<div style="display:flex;flex-direction:column;height:100%"><div class="chat">${m.join("")}</div>${kbd ? `<div class="kbd">${kbd}</div>` : ""}</div>`;
@@ -803,7 +822,7 @@ function venueFormView() {
 }
 function venueDoneView() {
   return `<div class="pad"><div class="empty" style="padding:16px 8px"><div class="mascot" style="background-image:url(${MASCOT})"></div><div class="h1">Готово! Так вас увидят фрилансеры</div></div>
-    <div class="box" style="padding:0;overflow:hidden"><div class="photo" style="background:${grad("Сова")};height:120px"><span class="letter">С</span><span class="vn">Сова <span class="tag" style="background:rgba(255,255,255,.2);color:#fff">новое</span></span></div>
+    <div class="box" style="padding:0;overflow:hidden"><div class="photo" style="background:${grad("Сова")};height:148px"><span class="letter">С</span><span class="vn">Сова <span class="tag" style="background:rgba(255,255,255,.2);color:#fff">новое</span></span></div>
       <div class="cbody"><div class="chips"><span class="tag good">✓ ИНН проверен</span><span class="tag">${S.onb.v.type}</span><span class="tag">${S.onb.v.area}</span></div><div class="muted small">Ленинский проспект, 30 · рейтинг появится после первых смен</div></div></div>
     <button class="btn main" data-a="vfirst">Выложить первую смену</button>
     <button class="btn ghost" data-a="vinvite">Пригласить коллегу</button></div>`;
@@ -816,13 +835,13 @@ function renderOnboarding() {
   renderLayer();
   if (o.kind === "venue") { renderVenueOnb(); return; }
   if (o.step >= 3) {
-    document.getElementById("tgTitle").innerHTML = `Подхват<small>тестовая версия ${VERSION}</small>`;
+    tgBar();
     screen.innerHTML = anketaView();
     return;
   }
-  document.getElementById("tgTitle").innerHTML = 'Подхват<small>бот</small>';
+  tgBar("бот");
   const msgs = [`<div class="bub">Привет! Это Подхват — смены в кафе, ресторанах, пекарнях, кондитерских и кофейнях Калининграда. Платят в конце смены, за неявку — штраф и пауза.<div class="muted small" style="margin-top:6px">Нажимая кнопку, ты соглашаешься на обработку персональных данных · <u>политика</u></div></div>`];
-  let kbd = `<button data-a="onb" data-v="1">Ищу смены</button><button data-a="toast" data-v="В прототипе показан путь фрилансера">Я из заведения</button>`;
+  let kbd = `<button data-a="onb" data-v="1">Ищу смены</button><button data-a="toast" data-v="В демо показан путь фрилансера">Я из заведения</button>`;
   if (o.step >= 1) { msgs.push(`<div class="bub me">Ищу смены</div>`, `<div class="bub">Поделись контактом — так мы узнаем твой номер. Никому не покажем до назначения на смену.</div>`); kbd = `<button data-a="onb" data-v="2">📱 Поделиться контактом</button>`; }
   if (o.step >= 2) { msgs.push(`<div class="bub me">📱 Контакт</div>`, `<div class="bub">Спасибо! Осталась анкета — одним экраном, минута.<button class="inline" data-a="onb" data-v="3">Заполнить анкету</button></div>`); kbd = ""; }
   screen.innerHTML = `<div style="display:flex;flex-direction:column;height:100%"><div class="chat">${msgs.join("")}</div>${kbd ? `<div class="kbd">${kbd}</div>` : ""}</div>`;
@@ -860,7 +879,7 @@ function renderLayer() {
   const L = document.getElementById("layer");
   if (S.scan) {
     L.innerHTML = `<div class="scan"><div class="h2" style="color:#fff">Наведи камеру на QR у входа на кухню</div><div class="frame"><div class="line"></div></div>
-      <button class="btn main" data-a="scanned">Есть! (симуляция скана)</button><button class="btn ghost" data-a="scanclose">Отмена</button></div>`;
+      <button class="btn main" data-a="scanned">Есть! (демо)</button><button class="btn ghost" data-a="scanclose">Отмена</button></div>`;
     return;
   }
   const sh = S.sheet;
@@ -917,9 +936,9 @@ function renderLayer() {
       <div class="list">${POINTS.map(p => `<div class="item"><button class="grow row" style="text-align:left;gap:12px" data-a="setpoint" data-v="${p.id}"><span class="thumb" style="background:${grad(p.venue)}">${p.venue[0]}</span><span style="min-width:0"><span class="title">${p.name}</span>${p.id === S.point ? ' <span class="tag good">выбрана</span>' : ""}<br><span class="muted small">${p.type} · ${p.addr}</span></span></button><button class="chip" data-a="qr" data-v="${p.id}">QR</button></div>`).join("")}
       <button class="item" data-a="toast" data-v="ИНН подставится сам — вводить заново не нужно"><span class="thumb" style="background:var(--surface-2);color:var(--ink-2)">+</span><span class="grow title">Добавить точку</span></button></div>`;
   } else if (sh.type === "dispute") {
-    body = `<div class="h1">Оспорить неявку</div><div class="muted">«Маяк», Ср 14 окт, 16:00–22:00. Заведение отметило «Не пришёл».</div>
+    body = `<div class="h1">Оспорить неявку</div><div class="muted">«Маяк», ${dwd(-3)}, 16:00–22:00. Заведение отметило «Не пришёл».</div>
       <div class="chips">${["Был на месте, не отметили", "Заболел — есть справка", "Смену отменили устно", "Другая причина"].map(r => `<button class="chip" data-a="dreason" data-v="${r}" aria-pressed="${sh.reason === r}">${r}</button>`).join("")}</div>
-      <button class="chip" data-a="toast" data-v="В прототипе файлы не прикладываются" style="align-self:flex-start">📎 Приложить фото или справку</button>
+      <button class="chip" data-a="toast" data-v="В демо файлы не прикладываются" style="align-self:flex-start">📎 Приложить фото или справку</button>
       <div class="box small">Модератор посмотрит отметку QR и геопозицию и ответит за сутки. Если прав ты — штрафы снимем, пауза закончится сразу.</div>
       <button class="btn main" data-a="disputeok">${sh.reason ? "Отправить модератору" : "Выбери причину"}</button>`;
   } else if (sh.type === "help") {
@@ -942,6 +961,26 @@ function toast(t) {
 }
 
 /* ---------- Свайпы ---------- */
+// Стопка по высоте экрана: в Telegram окно ниже макета, и «Не могу / Беру» закрывали низ карточки.
+// Высота — сколько есть над кнопками; фото сжимается, текст карточки остаётся целиком.
+function fitStack(st, full, maxPhoto) {
+  const card = st.querySelector(".card.top"), bar = st.parentElement.querySelector(".stickbar");
+  if (!card || !screen.clientHeight) return;
+  const top = st.getBoundingClientRect().top - screen.getBoundingClientRect().top + screen.scrollTop;
+  const gap = parseFloat(getComputedStyle(st.parentElement).rowGap) || 0;
+  const h = Math.round(Math.max(300, Math.min(full, screen.clientHeight - top - gap - (bar ? bar.offsetHeight : 0))));
+  const body = card.querySelector(".cbody"), bs = getComputedStyle(body), kids = [...body.children];
+  const need = kids.reduce((sum, el) => sum + el.offsetHeight, 0) + (parseFloat(bs.rowGap) || 0) * (kids.length - 1) + parseFloat(bs.paddingTop) + parseFloat(bs.paddingBottom) + 6;
+  st.style.height = h + "px";
+  st.style.setProperty("--ph", Math.round(Math.max(64, Math.min(maxPhoto, h - need))) + "px");
+}
+function fitStacks() {
+  const o = document.getElementById("offerStack"), a = document.getElementById("appStack");
+  if (o) fitStack(o, 470, 196);
+  if (a) fitStack(a, 380, 168);
+}
+window.addEventListener("resize", fitStacks);
+if (document.fonts) document.fonts.ready.then(fitStacks);
 function mountStacks() {
   const st = document.getElementById("offerStack");
   if (st) dragify(st, () => takeOffer(), () => skipOffer(), card => { S.sheet = { type: "detail", id: +card.dataset.id }; renderLayer(); });
@@ -1084,7 +1123,7 @@ const A = {
   wyes: d => { const w = S.waiting.find(x => x.o.id === +d.v); S.waiting = S.waiting.filter(x => x !== w); S.mine.unshift(mineFrom(w.o)); render(); toast("«Добро»! Смена твоя — адрес и меню ниже"); },
   wno: d => { S.waiting = S.waiting.filter(x => x.o.id !== +d.v); render(); toast("Выбрали другого. Похожие смены — в стопке"); },
   npwhat: d => { S.sheet.what = d.v; renderLayer(); },
-  nopayok: () => { const m = S.mine.find(x => x.id === S.sheet.id); m.step = 5; S.history.unshift({ venue: m.venue, date: m.date.replace(/^[А-Яа-я]+, /, ""), sum: m.sum, nopay: true }); S.mine = S.mine.filter(x => x.step < 5); S.sheet = null; render(); toast("Случай у модератора — ответ сегодня"); },
+  nopayok: () => { const m = S.mine.find(x => x.id === S.sheet.id); m.step = 5; S.history.unshift({ venue: m.venue, date: shortDate(m.date), sum: m.sum, nopay: true }); S.mine = S.mine.filter(x => x.step < 5); S.sheet = null; render(); toast("Случай у модератора — ответ сегодня"); },
   swipe: d => flyTop("offerStack", d.v === "right" ? 1 : -1, takeOffer, skipOffer),
   aswipe: d => flyTop("appStack", d.v === "right" ? 1 : -1, pickApplicant, nextApplicant),
   undo: () => { const p = S.pending; if (!p) return; clearInterval(p.timer); S[p.from].unshift(p.o); S.pending = null; renderSnack(); render(); toast("Отменили — без штрафа"); },
@@ -1100,7 +1139,7 @@ const A = {
   rated: d => {
     if (d.v === "no") { S.sheet = { type: "nopay", id: S.sheet.id, what: "Всю сумму" }; renderLayer(); return; }
     const m = S.mine.find(x => x.id === S.sheet.id); m.step = 5;
-    S.earned += m.sum; S.earnedShifts += 1; S.history.unshift({ venue: m.venue, date: m.date.replace(/^[А-Яа-я]+, /, ""), sum: m.sum });
+    S.earned += m.sum; S.earnedShifts += 1; S.history.unshift({ venue: m.venue, date: shortDate(m.date), sum: m.sum });
     S.mine = S.mine.filter(x => x.step < 5); S.sheet = null; render();
     toast(d.v === "yes" ? "Спасибо! Оценка ушла заведению" : "Разберёмся: модератор свяжется с заведением сегодня");
   },
@@ -1135,7 +1174,7 @@ const A = {
     if (f.day === "Сегодня" && parseInt(f.start, 10) < 17) { toast("Не позже чем за 2 часа до начала — сегодня только с 18:00"); return; }
     const n = matchCount(f), all = n <= 10 || f.day === "Сегодня";
     const who = !n ? "подходящих пока нет — уберите редкий навык" : f.day === "Сегодня" ? `смена срочная — разослали всем ${n} подходящим` : n <= 10 ? `предложили всем ${n} подходящим` : `предложили 10 лучшим, остальным — через ${f.day === "Завтра" && parseInt(f.start, 10) < 15 ? "20 минут" : "час"}`;
-    S.vshifts.unshift({ id: Date.now(), point: S.point, role: f.role, date: f.day === "📅 Дата" ? "Пн, 19 окт" : f.day, time: `${f.start}–${String((parseInt(f.start, 10) + f.hours) % 24).padStart(2, "0")}:00`, hours: f.hours, sum: f.sum, people: f.people, status: "Ищем", who, step: -1, fresh: true });
+    S.vshifts.unshift({ id: Date.now(), point: S.point, role: f.role, date: f.day === "📅 Дата" ? dkey(4) : f.day, time: `${f.start}–${String((parseInt(f.start, 10) + f.hours) % 24).padStart(2, "0")}:00`, hours: f.hours, sum: f.sum, people: f.people, status: "Ищем", who, step: -1, fresh: true });
     S.vtab = "shifts"; render(); screen.scrollTop = 0; toast(!n ? "Опубликовали, но подходящих пока нет" : `Опубликовали. Предложение ушло ${all ? "всем подходящим" : "10 лучшим"}`);
   },
   onboard: d => {
@@ -1220,6 +1259,25 @@ function tgEvent(type, data) {
       window.parent.postMessage(JSON.stringify({ eventType: type, eventData: payload }), "https://web.telegram.org");
     }
   } catch (e) { /* не в Telegram */ }
+}
+// Тема — как в Telegram (а не как в системе телефона), шапка и низ Telegram — в цвет страницы
+function tgTheme(p) {
+  const bg = p && p.bg_color;
+  if (!/^#[0-9a-f]{6}$/i.test(bg || "")) return;
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(bg.slice(i, i + 2), 16));
+  document.documentElement.setAttribute("data-theme", 0.299 * r + 0.587 * g + 0.114 * b < 128 ? "dark" : "light");
+  const cs = getComputedStyle(document.documentElement), c = v => cs.getPropertyValue(v).trim();
+  tgEvent("web_app_set_header_color", { color: c("--desk") });
+  tgEvent("web_app_set_background_color", { color: c("--bg") });
+  tgEvent("web_app_set_bottom_bar_color", { color: c("--surface") });
+  fitStacks();
+}
+if (IN_TG) {
+  try { tgTheme(JSON.parse(TG_PARAMS.get("tgWebAppThemeParams") || "{}")); } catch (e) { /* без темы — как в системе */ }
+  const onEvent = (type, data) => { if (type === "theme_changed") tgTheme(data && data.theme_params); else if (type === "viewport_changed") fitStacks(); };
+  window.Telegram = window.Telegram || {};
+  window.Telegram.WebView = window.Telegram.WebView || { receiveEvent: onEvent }; // iOS, Android, Desktop
+  window.addEventListener("message", e => { try { const m = JSON.parse(e.data); onEvent(m.eventType, m.eventData); } catch (err) { /* не наше */ } }); // веб-версия
 }
 tgEvent("web_app_ready");
 tgEvent("web_app_expand"); // во весь экран: меньше прокрутки
